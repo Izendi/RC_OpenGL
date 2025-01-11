@@ -129,7 +129,7 @@ int main()
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		RenderGui();
+		RenderGui(v_Shaders);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(up_window.get());
