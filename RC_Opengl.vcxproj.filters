@@ -1371,5 +1371,7 @@
     </None>
     <None Include="shaders\fs_Basic.glsl" />
     <None Include="shaders\vs_Basic.glsl" />
+    <None Include="shaders\fs_RCv1.glsl" />
+    <None Include="shaders\vs_RCv1.glsl" />
   </ItemGroup>
 </Project>

@@ -17,7 +17,7 @@ std::pair<std::unique_ptr<GLFWwindow, void(*)(GLFWwindow*)>, ImGuiIO&> SetUpGui(
 	return { std::move(p_glfw_Window), io };
 }
 
-void RenderGui(std::vector<std::shared_ptr<Shader>>& v_Shaders)
+void RenderGui(GuiData& guiData)
 {
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -31,9 +31,21 @@ void RenderGui(std::vector<std::shared_ptr<Shader>>& v_Shaders)
 	// Button with a label "Call MyFunction"
 	if (ImGui::Button("Recompile Shaders")) {
 		// Call the C++ function once when the button is clicked
-		for(int i = 0; i < v_Shaders.size(); i++)
+		for(int i = 0; i < guiData.shaders.size(); i++)
 		{
-			v_Shaders[i]->recompile();
+			guiData.shaders[i].recompile();
+		}
+	}
+
+	ImGui::Spacing();
+
+	for(int i = 0; i < guiData.shaders.size(); i++)
+	{
+		std::string label = std::to_string(i) + " - " + guiData.shaderNames[i];
+
+		if (ImGui::Selectable(label.c_str(), i == guiData.activeShader))
+		{
+			guiData.activeShader = i;
 		}
 	}
 

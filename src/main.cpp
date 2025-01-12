@@ -2,14 +2,26 @@
 #include "utils.h"
 
 #include <GLFW/glfw3.h>
+#include "vendor\stb_image\stb_image.h"
 
 #include "GUI.h"
 
-#include "Shader.h"
-
-#include "vendor\stb_image\stb_image.h"
+#include <chrono>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_pos_callback(GLFWwindow* window, double xPos, double yPos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+
+//int g_activeShader = 1;
+
+GuiData g_GuiData;
+
+float g_mouseX = 0.0f;
+float g_mouseY = 0.0f;
+float g_mouseClicked = 0.0f;
+
+int g_xResolution = SCR_WIDTH;
+int g_yResolution = SCR_HEIGHT;
 
 int main()
 {
@@ -43,6 +55,8 @@ int main()
 	glfwMakeContextCurrent(up_window.get());
 
 	glfwSetFramebufferSizeCallback(up_window.get(), framebuffer_size_callback);
+	glfwSetCursorPosCallback(up_window.get(), mouse_pos_callback);
+	glfwSetMouseButtonCallback(up_window.get(), mouse_button_callback);
 
 	glfwSwapInterval(1); //0 = no vsync, 1 = vsync 2 = half frame rate double vsync thing (look more into later)
 
@@ -75,21 +89,31 @@ int main()
 	ImGuiIO& io = windowPair.second; (void)io;
 	
 	//Set Up Shaders:
-	std::vector<std::shared_ptr<Shader>> v_Shaders;
+	//std::vector<Shader> v_Shaders;
 
 
-	std::shared_ptr<Shader> sh_Basic = std::make_shared<Shader>
+	Shader sh_Basic
 		(
 			"shaders/vs_Basic.glsl",
 			"shaders/fs_Basic.glsl"
 		);
 
-	v_Shaders.push_back(sh_Basic);
+	Shader sh_RCv1
+		(
+			"shaders/vs_RCv1.glsl",
+			"shaders/fs_RCv1.glsl"
+		);
+
+	g_GuiData.activeShader = 1;
+	g_GuiData.shaders.push_back(sh_Basic);
+	g_GuiData.shaderNames.push_back("Basic Shader");
+	g_GuiData.shaders.push_back(sh_RCv1);
+	g_GuiData.shaderNames.push_back("RC V1");
 
 
 	float quadVertices[] =
 	{
-		-1.0f,-1.0f, 0.0f,  0.0f, 0.0f, // Bottom-left
+		-1.0f, -1.0f, 0.0f,  0.0f, 0.0f,  // Bottom-left
 		 1.0f, -1.0f, 0.0f,  1.0f, 0.0f,  // Bottom-right
 		-1.0f,  1.0f, 0.0f,  0.0f, 1.0f,  // Top-left
 
@@ -116,20 +140,27 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	auto startTime = std::chrono::high_resolution_clock::now();
 
-
-	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(up_window.get()))
 	{
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Set a dark greenish clear color
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); 
 
-		v_Shaders[0]->bindProgram();
+		Shader& activeShader = g_GuiData.shaders[g_GuiData.activeShader];
+
+		activeShader.bindProgram();
+
+		activeShader.setUniformFloat("uTime", std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - startTime).count());
+		activeShader.setUniformFloat("uMousePressed", g_mouseClicked);
+		activeShader.setUniform2fv("uMousePos", g_mouseX, g_mouseY);
+		activeShader.setUniform2fv("uResolution", g_xResolution, g_yResolution);
+
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		RenderGui(v_Shaders);
+		RenderGui(g_GuiData);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(up_window.get());
@@ -153,5 +184,33 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	// make sure the viewport matches the new window dimensions; note that width and 
 	// height will be significantly larger than specified on retina displays.
+
+	//Set global values for shader input.
+	g_xResolution = width;
+	g_yResolution = height;
+
 	glViewport(0, 0, width, height);
+}
+
+void mouse_pos_callback(GLFWwindow* window, double xPos, double yPos)
+{
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+
+	// Normalize mouse position to range [0, 1]
+	g_mouseX = static_cast<float>(xPos) / static_cast<float>(width);
+	g_mouseY = 1.0f - static_cast<float>(yPos) / static_cast<float>(height); // Flip Y-axis
+
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	if (button == GLFW_MOUSE_BUTTON_LEFT) { // Check for left mouse button
+		if (action == GLFW_PRESS) {
+			g_mouseClicked = 1.0f; // Pressed
+		}
+		else if (action == GLFW_RELEASE) {
+			g_mouseClicked = 0.0f; // Released
+		}
+	}
 }

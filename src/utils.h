@@ -6,9 +6,19 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Shader.h"
+
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
+
+struct GuiData
+{
+	int activeShader = 0;
+	std::vector<Shader> shaders;
+	std::vector<std::string> shaderNames;
+
+};
 
 //Basic Error Checking
 #define ASSERT(x) if (!(x)) __debugbreak();

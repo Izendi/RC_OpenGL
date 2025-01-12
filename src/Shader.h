@@ -1,5 +1,5 @@
 #pragma once
-#include "utils.h"
+//#include "utils.h"
 
 #include <iostream>
 #include <memory>
@@ -11,6 +11,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <GL/glew.h>
 
 class Shader
 {
@@ -39,6 +41,8 @@ public:
 	void readShaderCodeFromFile(const char* vs_path, const char* fs_path);
 
 	void setUniform4f(std::string name, float v1, float v2, float v3, float v4) const;
+	void setUniform2fv(std::string name, glm::vec2& vec) const;
+	void setUniform2fv(std::string name, float v1, float v2) const;
 	void setUniform3fv(std::string name, glm::vec3& vec) const;
 	void setUniformFloat(std::string name, float val) const;
 	void setUniformInt(std::string name, int val) const;

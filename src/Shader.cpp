@@ -1,4 +1,5 @@
 #include "Shader.h"
+#include "utils.h"
 
 Shader::Shader(const char* vs, const char* fs) : vs_filePath(vs), fs_filePath(fs)
 {
@@ -70,6 +71,12 @@ void Shader::setUniform4f(std::string name, float v1, float v2, float v3, float 
 	GLCALL(glUniform4f(glGetUniformLocation(shaderProgHandle, n), v1, v2, v3, v4));
 }
 
+void Shader::setUniform2fv(std::string name, glm::vec2& vec) const
+{
+	const char* n = name.c_str();
+	GLCALL(glUniform2fv(glGetUniformLocation(shaderProgHandle, n), 1, &vec[0]));
+}
+
 void Shader::setUniform3fv(std::string name, glm::vec3& vec) const
 {
 	const char* n = name.c_str();
@@ -87,6 +94,12 @@ void Shader::setUniform3fv(std::string name, float v1, float v2, float v3) const
 {
 	const char* n = name.c_str();
 	GLCALL(glUniform3f(glGetUniformLocation(shaderProgHandle, n), v1, v2, v3));
+}
+
+void Shader::setUniform2fv(std::string name, float v1, float v2) const
+{
+	const char* n = name.c_str();
+	GLCALL(glUniform2f(glGetUniformLocation(shaderProgHandle, n), v1, v2));
 }
 
 void Shader::setUniformFloat(std::string name, float val) const
