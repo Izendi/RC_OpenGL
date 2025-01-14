@@ -17,7 +17,7 @@ std::pair<std::unique_ptr<GLFWwindow, void(*)(GLFWwindow*)>, ImGuiIO&> SetUpGui(
 	return { std::move(p_glfw_Window), io };
 }
 
-void RenderGui(GuiData& guiData)
+void RenderGui(GuiData& guiData, float deltaTime)
 {
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -26,7 +26,7 @@ void RenderGui(GuiData& guiData)
 
 	//ImGui::ShowDemoWindow(); // Show demo window! :)
 
-	ImGui::Begin("Example Window");
+	ImGui::Begin("Settings");
 
 	// Button with a label "Call MyFunction"
 	if (ImGui::Button("Recompile Shaders")) {
@@ -48,6 +48,18 @@ void RenderGui(GuiData& guiData)
 			guiData.activeShader = i;
 		}
 	}
+
+	ImGui::Spacing();
+	ImGui::Spacing();
+
+	ImGui::SetWindowFontScale(1.5f);
+	ImGui::Text("Performance:");
+	ImGui::SetWindowFontScale(1.0f);
+
+	ImGui::Spacing();
+
+	ImGui::Text("Frame Time: %.3f ms", deltaTime);
+	ImGui::Text("FPS: %.1f", 1000.0f / deltaTime);
 
 	ImGui::End();
 

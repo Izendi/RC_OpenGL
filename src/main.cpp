@@ -23,6 +23,7 @@ float g_mouseClicked = 0.0f;
 int g_xResolution = SCR_WIDTH;
 int g_yResolution = SCR_HEIGHT;
 
+
 int main()
 {
 
@@ -67,19 +68,37 @@ int main()
 
 	std::cout << "testing !" << std::endl;
 
+
+	//Set up texture data
 	int width;
 	int height;
 	int channels;
 
-	if (stbi_info("image.png", &width, &height, &channels))
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* data = stbi_load("res/tenByTen.png", &width, &height, &channels, 0);
+	if (!data) 
 	{
-		std::cout << "Image loaded successfully!\n";
-		std::cout << "Width: " << width << ", Height: " << height << ", Channels: " << channels << "\n";
+		std::cerr << "Failed to load texture" << std::endl;
+		return -1;
 	}
-	else 
-	{
-		std::cerr << "Failed to load image: " << stbi_failure_reason() << "\n";
-	}
+
+	uint32_t tex_twoByTwo;
+
+	glGenTextures(1, &tex_twoByTwo);
+	
+	glActiveTexture(GL_TEXTURE0); // Activate texture unit 0
+	glBindTexture(GL_TEXTURE_2D, tex_twoByTwo);
+
+	// setup texture wrapping parameters:
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	GLenum format = (channels == 3) ? GL_RGB : GL_RGBA;
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
+	stbi_image_free(data);
 
 	//IMGUI Setup:
 	// Setup Dear ImGui context (use std::move to move up_window pointer to the function, then move it back to main in a pair)
@@ -103,12 +122,19 @@ int main()
 			"shaders/vs_RCv1.glsl",
 			"shaders/fs_RCv1.glsl"
 		);
+	Shader sh_RCv2
+	(
+		"shaders/vs_RCv2.glsl",
+		"shaders/fs_RCv2.glsl"
+	);
 
-	g_GuiData.activeShader = 1;
+	g_GuiData.activeShader = 2;
 	g_GuiData.shaders.push_back(sh_Basic);
 	g_GuiData.shaderNames.push_back("Basic Shader");
 	g_GuiData.shaders.push_back(sh_RCv1);
 	g_GuiData.shaderNames.push_back("RC V1");
+	g_GuiData.shaders.push_back(sh_RCv2);
+	g_GuiData.shaderNames.push_back("RC V2");
 
 
 	float quadVertices[] =
@@ -141,9 +167,15 @@ int main()
 	glBindVertexArray(0);
 
 	auto startTime = std::chrono::high_resolution_clock::now();
+	float totalTime = 0.0f;
+	float lastFrameTotalTime = 0.0f;
+	float deltaTime = 0.0f;
 
 	while (!glfwWindowShouldClose(up_window.get()))
 	{
+		totalTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - startTime).count();
+		deltaTime = totalTime - lastFrameTotalTime;
+
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); 
@@ -152,21 +184,26 @@ int main()
 
 		activeShader.bindProgram();
 
-		activeShader.setUniformFloat("uTime", std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - startTime).count());
+		activeShader.setUniformFloat("uTime", totalTime);
 		activeShader.setUniformFloat("uMousePressed", g_mouseClicked);
 		activeShader.setUniform2fv("uMousePos", g_mouseX, g_mouseY);
 		activeShader.setUniform2fv("uResolution", g_xResolution, g_yResolution);
 
+		//Set texture:
+		activeShader.setUniformTextureUnit("u_tex_0", 0);
+
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		RenderGui(g_GuiData);
+		RenderGui(g_GuiData, deltaTime);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(up_window.get());
 
 		/* Poll for and process events */
 		glfwPollEvents();
+
+		lastFrameTotalTime = totalTime;
 	}
 
 	ImGui_ImplOpenGL3_Shutdown();
