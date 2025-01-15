@@ -75,7 +75,7 @@ int main()
 	int channels;
 
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char* data = stbi_load("res/tenByTen.png", &width, &height, &channels, 0);
+	unsigned char* data = stbi_load("res/cb.jpg", &width, &height, &channels, 0);
 	if (!data) 
 	{
 		std::cerr << "Failed to load texture" << std::endl;
