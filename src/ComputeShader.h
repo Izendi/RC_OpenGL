@@ -1,40 +1,25 @@
 #pragma once
 
-#include "utils.h"
-#include <fstream>
-#include <sstream>
+#include <string>
 
 class ComputeShader
 {
 public:
-	unsigned int m_ID;
+
+	unsigned int m_program_ID;
+	unsigned int m_shader_ID;
 	std::string m_cmpShader_string;
 
-	ComputeShader(const char* filePath)
-	{
+	ComputeShader(const char* filePath);
 
-	}
 
-	void readShaderCodeFromFile(const char* shaderCodePath)
-	{
-		std::ifstream cmpsFile;
+private:
+	void readShaderCodeFromFile(const char* shaderCodePath);
 
-		cmpsFile.open(shaderCodePath);
 
-		if (!cmpsFile.is_open())
-		{
-			std::cerr << "\nError: Unable to open vertex shader file at: " << shaderCodePath << std::endl;
-			ASSERT(false);
-		}
+	void checkComputeShaderCompileErrors(uint32_t computeShaderHandle);
 
-		std::stringstream cmpsStream;
 
-		cmpsStream << cmpsFile.rdbuf();
-
-		cmpsFile.close();
-
-		m_cmpShader_string = cmpsStream.str();
-	}
-
+	void checkComputeShaderProgramLinkErrors(uint32_t computeShaderProgramHandle);
 
 };

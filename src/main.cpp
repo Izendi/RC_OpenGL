@@ -1,13 +1,12 @@
 
 #include "utils.h"
 
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
 #include "vendor\stb_image\stb_image.h"
 
 #include "GUI.h"
 
 #include <chrono>
-
 #include "computeShader.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -15,8 +14,6 @@ void mouse_pos_callback(GLFWwindow* window, double xPos, double yPos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 //int g_activeShader = 1;
-
-GuiData g_GuiData;
 
 float g_mouseX = 0.0f;
 float g_mouseY = 0.0f;
@@ -72,6 +69,29 @@ int main()
 
 	std::cout << "\n\nOpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 
+	//Compute Shader Setup: START --------------------------------------------
+
+	uint32_t computeShaderId;
+
+	//ComputeShader cps("../../shaders/compute/cs_Basic.glsl");
+
+	GuiData g_GuiData("../../shaders/compute/cs_Basic.glsl");
+
+	//Image to write onto in compute shader:
+	uint32_t cmpTexID;
+	GLCALL(glGenTextures(1, &cmpTexID));
+	GLCALL(glActiveTexture(GL_TEXTURE0));
+	GLCALL(glBindTexture(GL_TEXTURE_2D, cmpTexID));
+	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 512, 512, 0, GL_RGBA, GL_FLOAT, NULL));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindImageTexture(0, cmpTexID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+
+	//Compute Shader Setup: END   --------------------------------------------
+
+
 
 	//Set up texture data
 	int width;
@@ -79,7 +99,7 @@ int main()
 	int channels;
 
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char* data = stbi_load("res/cb.jpg", &width, &height, &channels, 0);
+	unsigned char* data = stbi_load("../../res/cb.jpg", &width, &height, &channels, 0);
 	if (!data) 
 	{
 		std::cerr << "Failed to load texture" << std::endl;
@@ -90,7 +110,7 @@ int main()
 
 	glGenTextures(1, &tex_twoByTwo);
 	
-	glActiveTexture(GL_TEXTURE0); // Activate texture unit 0
+	glActiveTexture(GL_TEXTURE1); // Activate texture unit 0
 	glBindTexture(GL_TEXTURE_2D, tex_twoByTwo);
 
 	// setup texture wrapping parameters:
@@ -117,19 +137,19 @@ int main()
 
 	Shader sh_Basic
 		(
-			"shaders/vs_Basic.glsl",
-			"shaders/fs_Basic.glsl"
+			"../../shaders/vs_Basic.glsl",
+			"../../shaders/fs_Basic.glsl"
 		);
 
 	Shader sh_RCv1
 		(
-			"shaders/vs_RCv1.glsl",
-			"shaders/fs_RCv1.glsl"
+			"../../shaders/vs_RCv1.glsl",
+			"../../shaders/fs_RCv1.glsl"
 		);
 	Shader sh_RCv2
 	(
-		"shaders/vs_RCv2.glsl",
-		"shaders/fs_RCv2.glsl"
+		"../../shaders/vs_RCv2.glsl",
+		"../../shaders/fs_RCv2.glsl"
 	);
 
 	g_GuiData.activeShader = 2;
@@ -140,20 +160,6 @@ int main()
 	g_GuiData.shaders.push_back(sh_RCv2);
 	g_GuiData.shaderNames.push_back("RC V2");
 
-	//Compute Shader Setup: START --------------------------------------------
-
-	uint32_t computeShaderId;
-
-	ComputeShader cps("");
-
-	cps.readShaderCodeFromFile("");
-
-	//computeShaderId = glCreateShader(GL_COMPUTE_SHADER);
-	//glShaderSource(compute, 1, &)
-
-	//Compute Shader Setup: END   --------------------------------------------
-
-	ComputeShader cmp("");
 
 	float quadVertices[] =
 	{
@@ -189,8 +195,23 @@ int main()
 	float lastFrameTotalTime = 0.0f;
 	float deltaTime = 0.0f;
 
+	//Run compute Shader:
+	glUseProgram(g_GuiData.cmpShader.m_program_ID);
+	glDispatchCompute(512, 512, 1);
+
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT); //Wait for compute shader to complete
+
+
 	while (!glfwWindowShouldClose(up_window.get()))
 	{
+
+		//Run compute Shader:
+		glUseProgram(g_GuiData.cmpShader.m_program_ID);
+
+		glDispatchCompute(512, 512, 1);
+
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT); //Wait for compute shader to complete
+
 		totalTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - startTime).count();
 		deltaTime = totalTime - lastFrameTotalTime;
 
