@@ -35,6 +35,8 @@ void RenderGui(GuiData& guiData, float deltaTime)
 		{
 			guiData.shaders[i].recompile();
 		}
+
+		guiData.cmpShader.recompile();
 	}
 
 	ImGui::Spacing();

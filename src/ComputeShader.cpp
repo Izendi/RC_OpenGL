@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 
-ComputeShader::ComputeShader(const char* filePath)
+ComputeShader::ComputeShader(const char* filePath) : path(filePath)
 {
 
 	readShaderCodeFromFile(filePath);
@@ -76,4 +76,27 @@ void ComputeShader::checkComputeShaderProgramLinkErrors(uint32_t computeShaderPr
 		glGetShaderInfoLog(computeShaderProgramHandle, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::LINK_FAILED\n" << infoLog << std::endl;
 	}
+}
+
+void ComputeShader::recompile()
+{
+	readShaderCodeFromFile(path);
+
+	const char* css = m_cmpShader_string.c_str();
+
+	m_shader_ID = glCreateShader(GL_COMPUTE_SHADER);
+	GLCALL(glShaderSource(m_shader_ID, 1, &css, NULL));
+
+	GLCALL(glCompileShader(m_shader_ID));
+
+
+	checkComputeShaderCompileErrors(m_shader_ID);
+
+	m_program_ID = glCreateProgram();
+	GLCALL(glAttachShader(m_program_ID, m_shader_ID));
+	GLCALL(glLinkProgram(m_program_ID));
+
+	checkComputeShaderProgramLinkErrors(m_program_ID);
+
+	glDeleteShader(m_shader_ID);
 }
