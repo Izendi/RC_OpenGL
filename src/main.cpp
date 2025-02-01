@@ -8,6 +8,8 @@
 
 #include <chrono>
 
+#include "computeShader.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_pos_callback(GLFWwindow* window, double xPos, double yPos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -138,6 +140,20 @@ int main()
 	g_GuiData.shaders.push_back(sh_RCv2);
 	g_GuiData.shaderNames.push_back("RC V2");
 
+	//Compute Shader Setup: START --------------------------------------------
+
+	uint32_t computeShaderId;
+
+	ComputeShader cps("");
+
+	cps.readShaderCodeFromFile("");
+
+	//computeShaderId = glCreateShader(GL_COMPUTE_SHADER);
+	//glShaderSource(compute, 1, &)
+
+	//Compute Shader Setup: END   --------------------------------------------
+
+	ComputeShader cmp("");
 
 	float quadVertices[] =
 	{

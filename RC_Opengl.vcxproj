@@ -159,6 +159,7 @@
     <ClCompile Include="src\vendor\stb_perlin\stb_perlin.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ComputeShader.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\utils.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
