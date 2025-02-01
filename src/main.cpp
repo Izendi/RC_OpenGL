@@ -3,6 +3,7 @@
 
 #include <GLFW/glfw3.h>
 #include "vendor\stb_image\stb_image.h"
+#include "ComputeShader.h"
 
 #include "GUI.h"
 
@@ -31,6 +32,9 @@ int main()
 	{
 		return -1;
 	}
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
 	//GLFWwindow* window;
 	std::unique_ptr<GLFWwindow, void(*)(GLFWwindow*)> up_window
@@ -70,6 +74,8 @@ int main()
 
 
 	//Set up texture data
+
+	//Texture 1:
 	int width;
 	int height;
 	int channels;
@@ -100,6 +106,23 @@ int main()
 
 	stbi_image_free(data);
 
+
+	//Compute Shader Texture:
+	const unsigned int CS_TEXTURE_WIDTH = 512, CS_TEXTURE_HEIGHT = 512;
+	unsigned int csTexture;
+
+	glGenTextures(1, &csTexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, csTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, CS_TEXTURE_WIDTH, CS_TEXTURE_HEIGHT, 0, GL_RGBA,
+		GL_FLOAT, NULL);
+
+	glBindImageTexture(0, csTexture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+
 	//IMGUI Setup:
 	// Setup Dear ImGui context (use std::move to move up_window pointer to the function, then move it back to main in a pair)
 	std::pair<std::unique_ptr<GLFWwindow, void(*)(GLFWwindow*)>, ImGuiIO&> windowPair = SetUpGui(std::move(up_window));
@@ -109,7 +132,6 @@ int main()
 	
 	//Set Up Shaders:
 	//std::vector<Shader> v_Shaders;
-
 
 	Shader sh_Basic
 		(
@@ -128,7 +150,7 @@ int main()
 		"shaders/fs_RCv2.glsl"
 	);
 
-	g_GuiData.activeShader = 2;
+	g_GuiData.activeShader = 2; //Set this to the shader index you want the program to start with
 	g_GuiData.shaders.push_back(sh_Basic);
 	g_GuiData.shaderNames.push_back("Basic Shader");
 	g_GuiData.shaders.push_back(sh_RCv1);
@@ -136,6 +158,34 @@ int main()
 	g_GuiData.shaders.push_back(sh_RCv2);
 	g_GuiData.shaderNames.push_back("RC V2");
 
+	//Compute Shader Test: START --------------
+
+	uint32_t computeShader;
+
+	computeShader = glCreateShader(GL_COMPUTE_SHADER);
+
+	std::string csStr = readComputeShaderCodeFromFile("shaders/compute/cs_Basic.glsl"); //Having to copy a string is not ideal, but this won't effect the game loop, only startup.
+	const char* css = csStr.c_str();
+
+	GLCALL(glShaderSource(computeShader, 1, &css, NULL));
+	GLCALL(glCompileShader(computeShader));
+	checkComputeShaderCompileErrors(computeShader); //#CHECK_IF_CORRECT (Might need to swap Link or compile status with one or the other once you have a c shader to test.
+
+	uint32_t csProgram;
+	csProgram = glCreateProgram();
+	GLCALL(glAttachShader(csProgram, computeShader));
+	GLCALL(glLinkProgram(csProgram));
+	checkComputeShaderProgramLinkErrors(csProgram); //#CHECK_IF_CORRECT
+
+
+	//Dispatch Compute Shader
+	GLCALL(glUseProgram(computeShader));
+	GLCALL(glDispatchCompute((unsigned int)CS_TEXTURE_WIDTH, (unsigned int)CS_TEXTURE_HEIGHT, 1));
+
+	// make sure writing to image has finished before read
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+	//Compute Shader Test: END   --------------
 
 	float quadVertices[] =
 	{
@@ -190,7 +240,7 @@ int main()
 		activeShader.setUniform2fv("uResolution", g_xResolution, g_yResolution);
 
 		//Set texture:
-		activeShader.setUniformTextureUnit("u_tex_0", 0);
+		activeShader.setUniformTextureUnit("u_tex_0", 1);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);

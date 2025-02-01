@@ -959,6 +959,9 @@
     <ClInclude Include="src\GUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ComputeShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl">
@@ -1375,5 +1378,6 @@
     <None Include="shaders\vs_RCv1.glsl" />
     <None Include="shaders\fs_RCv2.glsl" />
     <None Include="shaders\vs_RCv2.glsl" />
+    <None Include="shaders\compute\cs_Basic.glsl" />
   </ItemGroup>
 </Project>
