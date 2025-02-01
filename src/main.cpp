@@ -68,6 +68,8 @@ int main()
 
 	std::cout << "testing !" << std::endl;
 
+	std::cout << "\n\nOpenGL Version: " << glGetString(GL_VERSION) << std::endl;
+
 
 	//Set up texture data
 	int width;
