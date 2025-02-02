@@ -22,6 +22,11 @@ float g_mouseClicked = 0.0f;
 int g_xResolution = SCR_WIDTH;
 int g_yResolution = SCR_HEIGHT;
 
+struct compShaderTexSize
+{
+	uint32_t x_size = 512;
+	uint32_t y_size = 512;
+};
 
 int main()
 {
@@ -71,9 +76,7 @@ int main()
 
 	//Compute Shader Setup: START --------------------------------------------
 
-	uint32_t computeShaderId;
-
-	//ComputeShader cps("../../shaders/compute/cs_Basic.glsl");
+	compShaderTexSize cmpShTxSize;
 
 	GuiData g_GuiData("../../shaders/compute/cs_Basic.glsl");
 
@@ -82,7 +85,7 @@ int main()
 	GLCALL(glGenTextures(1, &cmpTexID));
 	GLCALL(glActiveTexture(GL_TEXTURE0));
 	GLCALL(glBindTexture(GL_TEXTURE_2D, cmpTexID));
-	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, 512, 512, 0, GL_RGBA, GL_FLOAT, NULL));
+	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, cmpShTxSize.x_size, cmpShTxSize.y_size, 0, GL_RGBA, GL_FLOAT, NULL));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -197,7 +200,7 @@ int main()
 
 	//Run compute Shader:
 	glUseProgram(g_GuiData.cmpShader.m_program_ID);
-	glDispatchCompute(512, 512, 1);
+	//glDispatchCompute(512, 512, 1);
 
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT); //Wait for compute shader to complete
 
@@ -208,7 +211,7 @@ int main()
 		//Run compute Shader:
 		glUseProgram(g_GuiData.cmpShader.m_program_ID);
 
-		glDispatchCompute(512, 512, 1);
+		glDispatchCompute(32, 32, 1);
 
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT); //Wait for compute shader to complete
 
