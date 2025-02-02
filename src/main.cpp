@@ -1,7 +1,6 @@
 
 #include "utils.h"
 
-//#include <GLFW/glfw3.h>
 #include "vendor\stb_image\stb_image.h"
 
 #include "GUI.h"
