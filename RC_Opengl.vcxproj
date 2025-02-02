@@ -468,9 +468,11 @@
     <None Include="shaders\fs_Basic.glsl" />
     <None Include="shaders\fs_RCv1.glsl" />
     <None Include="shaders\fs_RCv2.glsl" />
+    <None Include="shaders\fs_SDF_test.glsl" />
     <None Include="shaders\vs_Basic.glsl" />
     <None Include="shaders\vs_RCv1.glsl" />
     <None Include="shaders\vs_RCv2.glsl" />
+    <None Include="shaders\vs_SDF_test.glsl" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />

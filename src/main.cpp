@@ -154,13 +154,21 @@ int main()
 		"../../shaders/fs_RCv2.glsl"
 	);
 
-	g_GuiData.activeShader = 2;
+	Shader sh_SDFTest
+	(
+		"../../shaders/vs_SDF_test.glsl",
+		"../../shaders/fs_SDF_test.glsl"
+	);
+
+	g_GuiData.activeShader = 0;
 	g_GuiData.shaders.push_back(sh_Basic);
 	g_GuiData.shaderNames.push_back("Basic Shader");
 	g_GuiData.shaders.push_back(sh_RCv1);
 	g_GuiData.shaderNames.push_back("RC V1");
 	g_GuiData.shaders.push_back(sh_RCv2);
 	g_GuiData.shaderNames.push_back("RC V2");
+	g_GuiData.shaders.push_back(sh_SDFTest);
+	g_GuiData.shaderNames.push_back("SDF Test");
 
 
 	float quadVertices[] =
@@ -207,7 +215,7 @@ int main()
 	while (!glfwWindowShouldClose(up_window.get()))
 	{
 
-		//Run compute Shader:
+		//Run compute Shader (currently it is run every frame, even if it is not used):
 		glUseProgram(g_GuiData.cmpShader.m_program_ID);
 
 		glDispatchCompute(32, 32, 1);
