@@ -50,6 +50,7 @@ public:
 	void setUniformTextureUnit(std::string name, unsigned int x);
 	void setUniformMat4(std::string name, GLboolean transpose, const GLfloat* mat);
 	void setUniform4fv(std::string name, glm::vec4& vec) const;
+	void setUniformArray(std::string name, uint32_t size, float* array);
 
 	void bindProgram() const;
 

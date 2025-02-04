@@ -90,6 +90,12 @@ void Shader::setUniform4fv(std::string name, glm::vec4& vec) const
 }
 
 
+void Shader::setUniformArray(std::string name, uint32_t size, float* array)
+{
+	const char* n = name.c_str();
+	GLCALL(glUniform1fv(glGetUniformLocation(shaderProgHandle, n), size, array));
+}
+
 void Shader::setUniform3fv(std::string name, float v1, float v2, float v3) const
 {
 	const char* n = name.c_str();

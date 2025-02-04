@@ -17,7 +17,7 @@ std::pair<std::unique_ptr<GLFWwindow, void(*)(GLFWwindow*)>, ImGuiIO&> SetUpGui(
 	return { std::move(p_glfw_Window), io };
 }
 
-void RenderGui(GuiData& guiData, float deltaTime)
+void RenderGui(GuiData& guiData, float deltaTime, int mouseIndex)
 {
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -62,6 +62,10 @@ void RenderGui(GuiData& guiData, float deltaTime)
 
 	ImGui::Text("Frame Time: %.3f ms", deltaTime);
 	ImGui::Text("FPS: %.1f", 1000.0f / deltaTime);
+
+	ImGui::Spacing();
+
+	ImGui::Text("No. SDFs: ", mouseIndex);
 
 	ImGui::End();
 

@@ -8,6 +8,9 @@
 #include <chrono>
 #include "computeShader.h"
 
+#include <utility>
+#include <thread>
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_pos_callback(GLFWwindow* window, double xPos, double yPos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -17,6 +20,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 float g_mouseX = 0.0f;
 float g_mouseY = 0.0f;
 float g_mouseClicked = 0.0f;
+bool mouseClicked = false;
 
 int g_xResolution = SCR_WIDTH;
 int g_yResolution = SCR_HEIGHT;
@@ -26,6 +30,11 @@ struct compShaderTexSize
 	uint32_t x_size = 512;
 	uint32_t y_size = 512;
 };
+
+float mouseXpos[1000] = { 0 };
+float mouseYpos[1000] = { 0 };
+int mouseIndex = 0;
+unsigned int frameCount = 0;
 
 int main()
 {
@@ -92,8 +101,6 @@ int main()
 	glBindImageTexture(0, cmpTexID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
 	//Compute Shader Setup: END   --------------------------------------------
-
-
 
 	//Set up texture data
 	int width;
@@ -212,6 +219,12 @@ int main()
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT); //Wait for compute shader to complete
 
 
+	//System to capture mouse input positions and generate an SDF (setup):
+
+	GLint maxUniformComponents;
+	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, &maxUniformComponents);
+	std::cout << "\n\nMax uniform components: " << maxUniformComponents << std::endl;
+
 	while (!glfwWindowShouldClose(up_window.get()))
 	{
 
@@ -237,6 +250,9 @@ int main()
 		activeShader.setUniformFloat("uMousePressed", g_mouseClicked);
 		activeShader.setUniform2fv("uMousePos", g_mouseX, g_mouseY);
 		activeShader.setUniform2fv("uResolution", g_xResolution, g_yResolution);
+		activeShader.setUniformArray("mouseX", 1000, mouseXpos);
+		activeShader.setUniformArray("mouseY", 1000, mouseYpos);
+		activeShader.setUniformInt("mouseIndex", mouseIndex - 1);
 
 		//Set texture:
 		activeShader.setUniformTextureUnit("u_tex_0", 0);
@@ -244,7 +260,7 @@ int main()
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		RenderGui(g_GuiData, deltaTime);
+		RenderGui(g_GuiData, deltaTime, mouseIndex);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(up_window.get());
@@ -253,6 +269,29 @@ int main()
 		glfwPollEvents();
 
 		lastFrameTotalTime = totalTime;
+
+		//This is for mouse input stuff: (A bit hacky, but it works)
+		frameCount = frameCount + 1;
+		if(frameCount > 30)
+		{
+			frameCount = 21;
+		}
+
+		if (mouseIndex < 1000 && frameCount > 10 && g_mouseClicked == 1.0f)
+		{
+			mouseXpos[mouseIndex] = (float)g_mouseX;
+			mouseYpos[mouseIndex] = (float)g_mouseY;
+
+			mouseIndex = mouseIndex + 1;
+
+			for (int i = 0; i < mouseIndex; i++)
+			{
+				std::cout << "\nxPos[" << i << "] = " << mouseXpos[i] << std::endl;
+				std::cout << "yPos[" << i << "] = " << mouseYpos[i] << "\n" << std::endl;
+			}
+
+			std::cout << "\n" << mouseIndex << std::endl;
+		}
 	}
 
 	ImGui_ImplOpenGL3_Shutdown();
@@ -299,4 +338,5 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 			g_mouseClicked = 0.0f; // Released
 		}
 	}
+
 }

@@ -7,9 +7,16 @@ out vec4 FragColor;
 uniform vec4 ourColor;
 uniform sampler2D u_tex_0;
 
+uniform float mouseX[1000];
+uniform float mouseY[1000];
+
+uniform int mouseIndex;
+
 vec3 BLACK = vec3(0.0, 0.0, 0.0);
 vec3 WHITE = vec3(1.0, 1.0, 1.0);
 vec3 GREY = vec3(0.6, 0.6, 0.6);
+
+vec3 RED = vec3(0.9, 0.21, 0.21);
 
 float inverseLerp(float v, float minValue, float maxValue) 
 {
@@ -56,6 +63,8 @@ float sdfCircle(vec2 fragPos, float r, float offset_y, float offset_x)
 
 void main()
 {
+
+    vec2 pixelCoords = (texCoord - 0.5) * vec2(800, 600);
     //vec4 texColor = texture(u_tex_0, texCoord);
     //FragColor = vec4(0.7, 0.2, 0.5, 1.0);
 
@@ -70,6 +79,9 @@ void main()
     vec3 finalColor = BackgroundColor();
     finalColor = drawGrid(finalColor, GREY, 10.0, 1.0);
     finalColor = drawGrid(finalColor, BLACK, 100.0, 1.5);
+
+    float d = sdfCircle(pixelCoords, 50.0, -100.0, 150.0);
+    finalColor = mix(RED, finalColor * mouseX[mouseIndex], step(0.0, d));
 
     FragColor = vec4(finalColor, 1.0);
 }
