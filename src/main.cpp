@@ -31,8 +31,8 @@ struct compShaderTexSize
 	uint32_t y_size = 512;
 };
 
-float mouseXpos[1000] = { 0 };
-float mouseYpos[1000] = { 0 };
+float mouseXpos[500] = { 0 };
+float mouseYpos[500] = { 0 };
 int mouseIndex = 0;
 unsigned int frameCount = 0;
 
@@ -250,8 +250,8 @@ int main()
 		activeShader.setUniformFloat("uMousePressed", g_mouseClicked);
 		activeShader.setUniform2fv("uMousePos", g_mouseX, g_mouseY);
 		activeShader.setUniform2fv("uResolution", g_xResolution, g_yResolution);
-		activeShader.setUniformArray("mouseX", 1000, mouseXpos);
-		activeShader.setUniformArray("mouseY", 1000, mouseYpos);
+		activeShader.setUniformArray("mouseX", 500, mouseXpos);
+		activeShader.setUniformArray("mouseY", 500, mouseYpos);
 		activeShader.setUniformInt("mouseIndex", mouseIndex - 1);
 
 		//Set texture:
@@ -277,20 +277,18 @@ int main()
 			frameCount = 21;
 		}
 
-		if (mouseIndex < 1000 && frameCount > 10 && g_mouseClicked == 1.0f)
+		if (mouseIndex < 500 && frameCount > 10 && g_mouseClicked == 1.0f)
 		{
 			mouseXpos[mouseIndex] = (float)g_mouseX;
 			mouseYpos[mouseIndex] = (float)g_mouseY;
 
+			std::cout << "\nxPos[" << mouseIndex << "] = " << mouseXpos[mouseIndex] << std::endl;
+			std::cout << "yPos[" << mouseIndex << "] = " << mouseYpos[mouseIndex] << "\n" << std::endl;
+
+
+			std::cout << "\nmi = " << mouseIndex << std::endl;
+
 			mouseIndex = mouseIndex + 1;
-
-			for (int i = 0; i < mouseIndex; i++)
-			{
-				std::cout << "\nxPos[" << i << "] = " << mouseXpos[i] << std::endl;
-				std::cout << "yPos[" << i << "] = " << mouseYpos[i] << "\n" << std::endl;
-			}
-
-			std::cout << "\n" << mouseIndex << std::endl;
 		}
 	}
 
@@ -325,6 +323,9 @@ void mouse_pos_callback(GLFWwindow* window, double xPos, double yPos)
 	// Normalize mouse position to range [0, 1]
 	g_mouseX = static_cast<float>(xPos) / static_cast<float>(width);
 	g_mouseY = 1.0f - static_cast<float>(yPos) / static_cast<float>(height); // Flip Y-axis
+
+	//g_mouseX = g_mouseX * 2.0f - 1.0f;
+	//g_mouseY = g_mouseY * 2.0f - 1.0f;
 
 }
 

@@ -7,8 +7,8 @@ out vec4 FragColor;
 uniform vec4 ourColor;
 uniform sampler2D u_tex_0;
 
-uniform float mouseX[1000];
-uniform float mouseY[1000];
+uniform float mouseX[500];
+uniform float mouseY[500];
 
 uniform int mouseIndex;
 
@@ -64,7 +64,8 @@ float sdfCircle(vec2 fragPos, float r, float offset_y, float offset_x)
 void main()
 {
 
-    vec2 pixelCoords = (texCoord - 0.5) * vec2(800, 600);
+    vec2 pixelCoords = (texCoord) * vec2(800, 600);
+
     //vec4 texColor = texture(u_tex_0, texCoord);
     //FragColor = vec4(0.7, 0.2, 0.5, 1.0);
 
@@ -80,8 +81,18 @@ void main()
     finalColor = drawGrid(finalColor, GREY, 10.0, 1.0);
     finalColor = drawGrid(finalColor, BLACK, 100.0, 1.5);
 
-    float d = sdfCircle(pixelCoords, 50.0, -100.0, 150.0);
-    finalColor = mix(RED, finalColor * mouseX[mouseIndex], step(0.0, d));
+    //float d = sdfCircle(pixelCoords, 200.0, -20.0, -300.0);
+    //finalColor = mix(RED, finalColor, step(0.0, d));
+
+    float d;
+
+    for (int i = 0; i < mouseIndex; i++)
+    {
+        d = sdfCircle(pixelCoords, 20.0, -mouseY[i] * 600.0, -mouseX[i] * 800.0);
+        finalColor = mix(RED, finalColor, step(0.0, d));
+    }
+
+    //finalColor = mix(RED, finalColor, step(0.0, d));
 
     FragColor = vec4(finalColor, 1.0);
 }
