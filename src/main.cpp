@@ -86,9 +86,9 @@ int main()
 
 	compShaderTexSize cmpShTxSize;
 
-	GuiData g_GuiData("../../shaders/compute/cs_Basic.glsl");
+	GuiData g_GuiData("../../shaders/compute/cs_Basic.glsl", "../../shaders/compute/rc_lvl_0.glsl");
 
-	//Image to write onto in compute shader:
+	//Image 1 to write onto in compute shader:
 	uint32_t cmpTexID;
 	GLCALL(glGenTextures(1, &cmpTexID));
 	GLCALL(glActiveTexture(GL_TEXTURE0));
@@ -98,7 +98,21 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glBindImageTexture(0, cmpTexID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+	glBindImageTexture(0, cmpTexID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); //Uses image unit 0
+
+	// Img Cascade Level 0 data texture:
+	uint32_t rcLvl_0_ID;
+	GLCALL(glGenTextures(1, &rcLvl_0_ID)); 
+	GLCALL(glActiveTexture(GL_TEXTURE2)); //The next call to glBindTexture will determine the texture assigned to this texture unit.
+	GLCALL(glBindTexture(GL_TEXTURE_2D, rcLvl_0_ID));
+	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, cmpShTxSize.x_size, cmpShTxSize.y_size, 0, GL_RGBA, GL_FLOAT, NULL));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindImageTexture(1, rcLvl_0_ID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); //Uses image unit 1
+
+
 
 	//Compute Shader Setup: END   --------------------------------------------
 
@@ -119,7 +133,7 @@ int main()
 
 	glGenTextures(1, &tex_twoByTwo);
 	
-	glActiveTexture(GL_TEXTURE1); // Activate texture unit 0
+	glActiveTexture(GL_TEXTURE1); // Activate texture unit 1
 	glBindTexture(GL_TEXTURE_2D, tex_twoByTwo);
 
 	// setup texture wrapping parameters:
@@ -167,6 +181,12 @@ int main()
 		"../../shaders/fs_SDF_test.glsl"
 	);
 
+	Shader sh_RCTexTest
+	{
+		"../../shaders/vs_RCTexTest.glsl",
+		"../../shaders/fs_RCTexTest.glsl"
+	};
+
 	g_GuiData.activeShader = 0;
 	g_GuiData.shaders.push_back(sh_Basic);
 	g_GuiData.shaderNames.push_back("Basic Shader");
@@ -176,6 +196,8 @@ int main()
 	g_GuiData.shaderNames.push_back("RC V2");
 	g_GuiData.shaders.push_back(sh_SDFTest);
 	g_GuiData.shaderNames.push_back("SDF Test");
+	g_GuiData.shaders.push_back(sh_RCTexTest);
+	g_GuiData.shaderNames.push_back("RC Tex Test");
 
 
 	float quadVertices[] =
@@ -230,10 +252,12 @@ int main()
 
 		//Run compute Shader (currently it is run every frame, even if it is not used):
 		glUseProgram(g_GuiData.cmpShader.m_program_ID);
-
 		glDispatchCompute(32, 32, 1);
-
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT); //Wait for compute shader to complete
+
+		glUseProgram(g_GuiData.cmpShdRCLvl_0.m_program_ID);
+		glDispatchCompute(256, 256, 1);
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 		totalTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - startTime).count();
 		deltaTime = totalTime - lastFrameTotalTime;
@@ -256,6 +280,7 @@ int main()
 
 		//Set texture:
 		activeShader.setUniformTextureUnit("u_tex_0", 0);
+		activeShader.setUniformTextureUnit("u_tex_2", 2);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);

@@ -5,7 +5,6 @@ in vec2 texCoord;
 out vec4 FragColor;
 
 uniform vec4 ourColor;
-uniform sampler2D u_tex_0;
 
 uniform float mouseX[500];
 uniform float mouseY[500];
@@ -66,9 +65,6 @@ void main()
 
     vec2 pixelCoords = (texCoord) * vec2(800, 600);
 
-    //vec4 texColor = texture(u_tex_0, texCoord);
-    //FragColor = vec4(0.7, 0.2, 0.5, 1.0);
-
     float x = step((abs(mod(texCoord.x, 0.025))), 0.004); // if value is less than 0.004 return 1
     float y = step((abs(mod(texCoord.y, 0.025))), 0.004);
 
@@ -81,9 +77,6 @@ void main()
     finalColor = drawGrid(finalColor, GREY, 10.0, 1.0);
     finalColor = drawGrid(finalColor, BLACK, 100.0, 1.5);
 
-    //float d = sdfCircle(pixelCoords, 200.0, -20.0, -300.0);
-    //finalColor = mix(RED, finalColor, step(0.0, d));
-
     float d;
 
     for (int i = 0; i < mouseIndex; i++)
@@ -91,8 +84,6 @@ void main()
         d = sdfCircle(pixelCoords, 20.0, -mouseY[i] * 600.0, -mouseX[i] * 800.0);
         finalColor = mix(RED, finalColor, step(0.0, d));
     }
-
-    //finalColor = mix(RED, finalColor, step(0.0, d));
 
     FragColor = vec4(finalColor, 1.0);
 }

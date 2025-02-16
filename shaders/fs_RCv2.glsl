@@ -53,6 +53,7 @@ vec3 drawGrid(vec3 color, vec3 lineColor, float cellSpacing, float lineWidth)
   return color;
 }
 
+//Note: this function is wrong and needs to be fixed.
 float sdfCircle(vec2 fragPos, float r, float offset_y, float offset_x)
 {
   fragPos.x = fragPos.x + offset_x;

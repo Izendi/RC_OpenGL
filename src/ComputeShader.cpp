@@ -7,7 +7,6 @@
 
 ComputeShader::ComputeShader(const char* filePath) : path(filePath)
 {
-
 	readShaderCodeFromFile(filePath);
 
 	const char* css = m_cmpShader_string.c_str();

@@ -17,6 +17,8 @@ void main()
     value.x = float(texelCoord.x) / (gl_NumWorkGroups.x * gl_WorkGroupSize.x);
     value.y = float(texelCoord.y) / (gl_NumWorkGroups.y * gl_WorkGroupSize.y);
 
+    //value = vec4(1.0, 0.0, 0.0, 1.0);
+
     imageStore(imgOutput, texelCoord, value);
 }
 
