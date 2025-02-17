@@ -4,6 +4,11 @@ layout(local_size_x = 2, local_size_y = 2, local_size_z = 1) in;
 
 layout(rgba32f, binding = 1) uniform image2D imgOutput;
 
+uniform float mouseX[100];
+uniform float mouseY[100];
+
+uniform int mouseIndex;
+
 /*
 vec2 rotateVecAntiClockwise(vec2 v, float radians)
 {
@@ -56,7 +61,7 @@ void main()
 
     float distanceFromNearestSDF = 10.0;
 
-    vec2 circlePositions[11];
+    //vec2 circlePositions[11];
 
     //Remember, canvas will be 512 by 512 in this test
     /*
@@ -73,6 +78,7 @@ void main()
     circlePositions[10] = vec2(256, 300.0);
     */
 
+    /*
     circlePositions[0] = vec2(0.0, 0.0);
     circlePositions[1] = vec2(0.0, 0.0);
     circlePositions[2] = vec2(0.0, 0.0);
@@ -84,6 +90,7 @@ void main()
     circlePositions[8] = vec2(0.0, 0.0);
     circlePositions[9] = vec2(0.0, 0.0);
     circlePositions[10]= vec2(0.0, 0.0);
+    */
 
     //ray equation = O + Pt
 
@@ -104,9 +111,10 @@ void main()
             break;
         }
 
-        for (int ii = 0; ii < 10; ii++)
+        for (int ii = 0; ii < mouseIndex; ii++)
         {
-            float newDistance = sdfCircle(ray, circlePositions[ii], radius);
+            vec2 circlePosition = vec2(mouseX[ii]*512.0, mouseY[ii]*512.0);
+            float newDistance = sdfCircle(ray, circlePosition, radius);
             
             distanceFromNearestSDF = min(distanceFromNearestSDF, newDistance);
         }

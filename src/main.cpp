@@ -259,6 +259,10 @@ int main()
 		glDispatchCompute(256, 256, 1);
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
+		g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseX", 500, mouseXpos);
+		g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseY", 500, mouseYpos);
+		g_GuiData.cmpShdRCLvl_0.setUniformInt("mouseIndex", mouseIndex - 1);
+
 		totalTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - startTime).count();
 		deltaTime = totalTime - lastFrameTotalTime;
 

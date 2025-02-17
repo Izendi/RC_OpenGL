@@ -16,6 +16,9 @@ public:
 	
 	void recompile();
 
+	void setUniformArray(std::string name, uint32_t size, float* array);
+	void setUniformInt(std::string name, int val) const;
+
 private:
 	void readShaderCodeFromFile(const char* shaderCodePath);
 

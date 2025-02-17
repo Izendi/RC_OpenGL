@@ -99,3 +99,17 @@ void ComputeShader::recompile()
 
 	glDeleteShader(m_shader_ID);
 }
+
+void ComputeShader::setUniformArray(std::string name, uint32_t size, float* array)
+{
+	const char* n = name.c_str();
+	GLCALL(glUniform1fv(glGetUniformLocation(m_program_ID, n), size, array));
+
+}
+
+void ComputeShader::setUniformInt(std::string name, int val) const
+{
+	const char* n = name.c_str();
+	GLCALL(glUniform1i(glGetUniformLocation(m_program_ID, n), val));
+
+}
