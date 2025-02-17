@@ -54,7 +54,7 @@ void main()
 
     value = vec4(0.1, 0.1, 0.1, 1.0); //Default value if ray does not hit a sphere.
 
-    float distanceFromNearestSDF = 100.0;
+    float distanceFromNearestSDF = 10.0;
 
     vec2 circlePositions[11];
 
@@ -77,9 +77,9 @@ void main()
     circlePositions[1] = vec2(0.0, 0.0);
     circlePositions[2] = vec2(0.0, 0.0);
     circlePositions[3] = vec2(256.0, 240.0);
-    circlePositions[4] = vec2(0.0, 0.0);
-    circlePositions[5] = vec2(0.0, 0.0);
-    circlePositions[6] = vec2(0.0, 0.0);
+    circlePositions[4] = vec2(256.0, 356.0);
+    circlePositions[5] = vec2(356.0, 356.0);
+    circlePositions[6] = vec2(356.0, 256.0);
     circlePositions[7] = vec2(0.0, 0.0);
     circlePositions[8] = vec2(0.0, 0.0);
     circlePositions[9] = vec2(0.0, 0.0);
@@ -91,6 +91,13 @@ void main()
 
     for (int i = 0; i < 10; i++)
     {
+        
+        if (distanceFromNearestSDF > 10.1)
+        {
+            break;
+        }
+        
+
         if (distanceFromNearestSDF < 0.1)
         {
             value = vec4(1.0, 0.0, 0.0, 1.0); //Make fragment red if ray intersects with a sphere.
