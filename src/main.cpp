@@ -31,8 +31,8 @@ struct compShaderTexSize
 	uint32_t y_size = 512;
 };
 
-float mouseXpos[500] = { 0 };
-float mouseYpos[500] = { 0 };
+float mouseXpos[100] = { 0 };
+float mouseYpos[100] = { 0 };
 int mouseIndex = 0;
 unsigned int frameCount = 0;
 
@@ -259,8 +259,8 @@ int main()
 		glDispatchCompute(256, 256, 1);
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-		g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseX", 500, mouseXpos);
-		g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseY", 500, mouseYpos);
+		g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseX", 100, mouseXpos);
+		g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseY", 100, mouseYpos);
 		g_GuiData.cmpShdRCLvl_0.setUniformInt("mouseIndex", mouseIndex - 1);
 
 		totalTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - startTime).count();
@@ -306,7 +306,7 @@ int main()
 			frameCount = 21;
 		}
 
-		if (mouseIndex < 500 && frameCount > 10 && g_mouseClicked == 1.0f)
+		if (mouseIndex < 100 && frameCount > 10 && g_mouseClicked == 1.0f)
 		{
 			mouseXpos[mouseIndex] = (float)g_mouseX;
 			mouseYpos[mouseIndex] = (float)g_mouseY;
