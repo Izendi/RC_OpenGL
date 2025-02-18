@@ -465,13 +465,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\compute\cs_Basic.glsl" />
+    <None Include="shaders\compute\rc_0.glsl" />
     <None Include="shaders\compute\rc_lvl_0.glsl" />
     <None Include="shaders\fs_Basic.glsl" />
+    <None Include="shaders\fs_RCFinal.glsl" />
     <None Include="shaders\fs_RCTexTest.glsl" />
     <None Include="shaders\fs_RCv1.glsl" />
     <None Include="shaders\fs_RCv2.glsl" />
     <None Include="shaders\fs_SDF_test.glsl" />
     <None Include="shaders\vs_Basic.glsl" />
+    <None Include="shaders\vs_RCFinal.glsl" />
     <None Include="shaders\vs_RCTexTest.glsl" />
     <None Include="shaders\vs_RCv1.glsl" />
     <None Include="shaders\vs_RCv2.glsl" />

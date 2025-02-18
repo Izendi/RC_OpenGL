@@ -86,7 +86,7 @@ int main()
 
 	compShaderTexSize cmpShTxSize;
 
-	GuiData g_GuiData("../../shaders/compute/cs_Basic.glsl", "../../shaders/compute/rc_lvl_0.glsl");
+	GuiData g_GuiData("../../shaders/compute/cs_Basic.glsl", "../../shaders/compute/rc_lvl_0.glsl", "../../shaders/compute/rc_0.glsl");
 
 	//Image 1 to write onto in compute shader:
 	uint32_t cmpTexID;
@@ -100,7 +100,7 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBindImageTexture(0, cmpTexID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); //Uses image unit 0
 
-	// Img Cascade Level 0 data texture:
+	// Img Cascade Level 0 test data texture:
 	uint32_t rcLvl_0_ID;
 	GLCALL(glGenTextures(1, &rcLvl_0_ID)); 
 	GLCALL(glActiveTexture(GL_TEXTURE2)); //The next call to glBindTexture will determine the texture assigned to this texture unit.
@@ -112,6 +112,17 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBindImageTexture(1, rcLvl_0_ID, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); //Uses image unit 1
 
+	// Img Cascade Level 0 real data texture:
+	uint32_t rc_0_tex;
+	GLCALL(glGenTextures(1, &rc_0_tex));
+	GLCALL(glActiveTexture(GL_TEXTURE3)); //The next call to glBindTexture will determine the texture assigned to this texture unit.
+	GLCALL(glBindTexture(GL_TEXTURE_2D, rc_0_tex));
+	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, cmpShTxSize.x_size, cmpShTxSize.y_size, 0, GL_RGBA, GL_FLOAT, NULL));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindImageTexture(2, rc_0_tex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); //Uses image unit 2
 
 
 	//Compute Shader Setup: END   --------------------------------------------
@@ -187,6 +198,12 @@ int main()
 		"../../shaders/fs_RCTexTest.glsl"
 	};
 
+	Shader sh_RCFinal
+	{
+		"../../shaders/vs_RCFinal.glsl",
+		"../../shaders/fs_RCFinal.glsl"
+	};
+
 	g_GuiData.activeShader = 0;
 	g_GuiData.shaders.push_back(sh_Basic);
 	g_GuiData.shaderNames.push_back("Basic Shader");
@@ -198,6 +215,8 @@ int main()
 	g_GuiData.shaderNames.push_back("SDF Test");
 	g_GuiData.shaders.push_back(sh_RCTexTest);
 	g_GuiData.shaderNames.push_back("RC Tex Test");
+	g_GuiData.shaders.push_back(sh_RCFinal);
+	g_GuiData.shaderNames.push_back("RC Final");
 
 
 	float quadVertices[] =
@@ -255,13 +274,26 @@ int main()
 		glDispatchCompute(32, 32, 1);
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT); //Wait for compute shader to complete
 
-		glUseProgram(g_GuiData.cmpShdRCLvl_0.m_program_ID);
-		glDispatchCompute(256, 256, 1);
-		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		if (g_GuiData.activeShader == 4)
+		{
+			glUseProgram(g_GuiData.cmpShdRCLvl_0.m_program_ID);
+			glDispatchCompute(256, 256, 1);
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		
+			g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseX", 100, mouseXpos);
+			g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseY", 100, mouseYpos);
+			g_GuiData.cmpShdRCLvl_0.setUniformInt("mouseIndex", mouseIndex);
+		}
+		else if (g_GuiData.activeShader == 5)
+		{
+			glUseProgram(g_GuiData.csRC_0.m_program_ID);
+			glDispatchCompute(256, 256, 1);
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-		g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseX", 100, mouseXpos);
-		g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseY", 100, mouseYpos);
-		g_GuiData.cmpShdRCLvl_0.setUniformInt("mouseIndex", mouseIndex);
+			g_GuiData.csRC_0.setUniformArray("mouseX", 100, mouseXpos);
+			g_GuiData.csRC_0.setUniformArray("mouseY", 100, mouseYpos);
+			g_GuiData.csRC_0.setUniformInt("mouseIndex", mouseIndex);
+		}
 
 		totalTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - startTime).count();
 		deltaTime = totalTime - lastFrameTotalTime;
@@ -285,6 +317,7 @@ int main()
 		//Set texture:
 		activeShader.setUniformTextureUnit("u_tex_0", 0);
 		activeShader.setUniformTextureUnit("u_tex_2", 2);
+		activeShader.setUniformTextureUnit("u_tex_3", 3);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);

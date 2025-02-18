@@ -25,13 +25,17 @@
 
 struct GuiData
 {
-	GuiData(const char* cmpShaderPath, const char* cmpShaderRCLvl_0_path) : cmpShader(cmpShaderPath), cmpShdRCLvl_0(cmpShaderRCLvl_0_path) {}
+	GuiData(const char* cmpShaderPath, const char* cmpShaderRCLvl_0_path, const char* csRC_0_path) : 
+		cmpShader(cmpShaderPath), 
+		cmpShdRCLvl_0(cmpShaderRCLvl_0_path), 
+		csRC_0(csRC_0_path) {}
 
 	int activeShader = 0;
 	std::vector<Shader> shaders;
 	std::vector<std::string> shaderNames;
 	ComputeShader cmpShader;
 	ComputeShader cmpShdRCLvl_0;
+	ComputeShader csRC_0;
 };
 
 // settings
