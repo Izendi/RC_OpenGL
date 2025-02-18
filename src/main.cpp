@@ -261,7 +261,7 @@ int main()
 
 		g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseX", 100, mouseXpos);
 		g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseY", 100, mouseYpos);
-		g_GuiData.cmpShdRCLvl_0.setUniformInt("mouseIndex", mouseIndex - 1);
+		g_GuiData.cmpShdRCLvl_0.setUniformInt("mouseIndex", mouseIndex);
 
 		totalTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - startTime).count();
 		deltaTime = totalTime - lastFrameTotalTime;
@@ -278,9 +278,9 @@ int main()
 		activeShader.setUniformFloat("uMousePressed", g_mouseClicked);
 		activeShader.setUniform2fv("uMousePos", g_mouseX, g_mouseY);
 		activeShader.setUniform2fv("uResolution", g_xResolution, g_yResolution);
-		activeShader.setUniformArray("mouseX", 500, mouseXpos);
-		activeShader.setUniformArray("mouseY", 500, mouseYpos);
-		activeShader.setUniformInt("mouseIndex", mouseIndex - 1);
+		activeShader.setUniformArray("mouseX", 100, mouseXpos);
+		activeShader.setUniformArray("mouseY", 100, mouseYpos);
+		activeShader.setUniformInt("mouseIndex", mouseIndex);
 
 		//Set texture:
 		activeShader.setUniformTextureUnit("u_tex_0", 0);
@@ -299,14 +299,9 @@ int main()
 
 		lastFrameTotalTime = totalTime;
 
-		//This is for mouse input stuff: (A bit hacky, but it works)
-		frameCount = frameCount + 1;
-		if(frameCount > 30)
-		{
-			frameCount = 21;
-		}
+		//This is for mouse input stuff: (A bit hacky, but it works):
 
-		if (mouseIndex < 100 && frameCount > 10 && g_mouseClicked == 1.0f)
+		if (mouseIndex < 100 && g_mouseClicked == 0.0f && mouseClicked == true)
 		{
 			mouseXpos[mouseIndex] = (float)g_mouseX;
 			mouseYpos[mouseIndex] = (float)g_mouseY;
@@ -318,6 +313,8 @@ int main()
 			std::cout << "\nmi = " << mouseIndex << std::endl;
 
 			mouseIndex = mouseIndex + 1;
+
+			g_mouseClicked = 1.0f;
 		}
 	}
 
@@ -362,11 +359,12 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT) { // Check for left mouse button
 		if (action == GLFW_PRESS) {
-			g_mouseClicked = 1.0f; // Pressed
+			//g_mouseClicked = 1.0f; // Pressed
+			mouseClicked = true;
 		}
 		else if (action == GLFW_RELEASE) {
 			g_mouseClicked = 0.0f; // Released
+			mouseClicked = false;
 		}
 	}
-
 }
