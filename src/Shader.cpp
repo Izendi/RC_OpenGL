@@ -108,6 +108,12 @@ void Shader::setUniform2fv(std::string name, float v1, float v2) const
 	GLCALL(glUniform2f(glGetUniformLocation(shaderProgHandle, n), v1, v2));
 }
 
+void Shader::setUniform2iv(std::string name, int v1, int v2) const
+{
+	const char* n = name.c_str();
+	GLCALL(glUniform2i(glGetUniformLocation(shaderProgHandle, n), v1, v2));
+}
+
 void Shader::setUniformFloat(std::string name, float val) const
 {
 	const char* n = name.c_str();

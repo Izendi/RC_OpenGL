@@ -43,6 +43,7 @@ public:
 	void setUniform4f(std::string name, float v1, float v2, float v3, float v4) const;
 	void setUniform2fv(std::string name, glm::vec2& vec) const;
 	void setUniform2fv(std::string name, float v1, float v2) const;
+	void setUniform2iv(std::string name, int v1, int v2) const;
 	void setUniform3fv(std::string name, glm::vec3& vec) const;
 	void setUniformFloat(std::string name, float val) const;
 	void setUniformInt(std::string name, int val) const;

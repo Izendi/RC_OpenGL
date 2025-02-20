@@ -314,6 +314,8 @@ int main()
 		activeShader.setUniformArray("mouseY", 100, mouseYpos);
 		activeShader.setUniformInt("mouseIndex", mouseIndex);
 
+		activeShader.setUniform2iv("screenRes", g_xResolution, g_yResolution);
+
 		//Set texture:
 		activeShader.setUniformTextureUnit("u_tex_0", 0);
 		activeShader.setUniformTextureUnit("u_tex_2", 2);
