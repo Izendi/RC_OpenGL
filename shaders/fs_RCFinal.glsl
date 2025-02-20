@@ -93,6 +93,6 @@ void main()
     FragColor = vec4(final_lerp_color.x, final_lerp_color.y, final_lerp_color.z, 1.0);
 
 
-    FragColor = vec4(1.0, 1.0, 0.0, 1.0);
+    //FragColor = vec4(1.0, 1.0, 0.0, 1.0);
 
 }
