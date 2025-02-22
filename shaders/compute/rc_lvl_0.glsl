@@ -59,7 +59,7 @@ void main()
 
     value = vec4(0.1, 0.1, 0.1, 1.0); //Default value if ray does not hit a sphere.
 
-    float distanceFromNearestSDF = 10.0;
+    float distanceFromNearestSDF = 5.0;
 
     //vec2 circlePositions[11];
 
@@ -99,7 +99,7 @@ void main()
     for (int i = 0; i < 10; i++)
     {
         
-        if (distanceFromNearestSDF > 10.1)
+        if (distanceFromNearestSDF > 5.1)
         {
             break;
         }

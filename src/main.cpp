@@ -39,7 +39,7 @@ unsigned int frameCount = 0;
 int main()
 {
 
-	if (!glfwInit()) 
+	if (!glfwInit())
 	{
 		return -1;
 	}
@@ -102,7 +102,7 @@ int main()
 
 	// Img Cascade Level 0 test data texture:
 	uint32_t rcLvl_0_ID;
-	GLCALL(glGenTextures(1, &rcLvl_0_ID)); 
+	GLCALL(glGenTextures(1, &rcLvl_0_ID));
 	GLCALL(glActiveTexture(GL_TEXTURE2)); //The next call to glBindTexture will determine the texture assigned to this texture unit.
 	GLCALL(glBindTexture(GL_TEXTURE_2D, rcLvl_0_ID));
 	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, cmpShTxSize.x_size, cmpShTxSize.y_size, 0, GL_RGBA, GL_FLOAT, NULL));
@@ -134,7 +134,7 @@ int main()
 
 	stbi_set_flip_vertically_on_load(true);
 	unsigned char* data = stbi_load("../../res/cb.jpg", &width, &height, &channels, 0);
-	if (!data) 
+	if (!data)
 	{
 		std::cerr << "Failed to load texture" << std::endl;
 		return -1;
@@ -143,7 +143,7 @@ int main()
 	uint32_t tex_twoByTwo;
 
 	glGenTextures(1, &tex_twoByTwo);
-	
+
 	glActiveTexture(GL_TEXTURE1); // Activate texture unit 1
 	glBindTexture(GL_TEXTURE_2D, tex_twoByTwo);
 
@@ -164,22 +164,22 @@ int main()
 
 	up_window = std::move(windowPair.first);
 	ImGuiIO& io = windowPair.second; (void)io;
-	
+
 	//Set Up Shaders:
 	//std::vector<Shader> v_Shaders;
 
 
 	Shader sh_Basic
-		(
-			"../../shaders/vs_Basic.glsl",
-			"../../shaders/fs_Basic.glsl"
-		);
+	(
+		"../../shaders/vs_Basic.glsl",
+		"../../shaders/fs_Basic.glsl"
+	);
 
 	Shader sh_RCv1
-		(
-			"../../shaders/vs_RCv1.glsl",
-			"../../shaders/fs_RCv1.glsl"
-		);
+	(
+		"../../shaders/vs_RCv1.glsl",
+		"../../shaders/fs_RCv1.glsl"
+	);
 	Shader sh_RCv2
 	(
 		"../../shaders/vs_RCv2.glsl",
@@ -274,7 +274,7 @@ int main()
 		glDispatchCompute(32, 32, 1);
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT); //Wait for compute shader to complete
 
-		if (g_GuiData.activeShader == 4 && g_GuiData.activeShader == 5)
+		if (g_GuiData.activeShader == 4 || g_GuiData.activeShader == 5)
 		{
 			glUseProgram(g_GuiData.cmpShdRCLvl_0.m_program_ID);
 			glDispatchCompute(256, 256, 1);
@@ -283,6 +283,16 @@ int main()
 			g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseX", 100, mouseXpos);
 			g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseY", 100, mouseYpos);
 			g_GuiData.cmpShdRCLvl_0.setUniformInt("mouseIndex", mouseIndex);
+
+			// -----
+
+			glUseProgram(g_GuiData.csRC_0.m_program_ID);
+			glDispatchCompute(256, 256, 1);
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+			g_GuiData.csRC_0.setUniformArray("mouseX", 100, mouseXpos);
+			g_GuiData.csRC_0.setUniformArray("mouseY", 100, mouseYpos);
+			g_GuiData.csRC_0.setUniformInt("mouseIndex", mouseIndex);
 		}
 		/*
 		else if (g_GuiData.activeShader == 5)
@@ -321,7 +331,7 @@ int main()
 		//Set texture:
 		activeShader.setUniformTextureUnit("u_tex_0", 0);
 		activeShader.setUniformTextureUnit("u_tex_2", 2);
-		//activeShader.setUniformTextureUnit("u_tex_3", 3);
+		activeShader.setUniformTextureUnit("u_tex_3", 3);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
