@@ -274,7 +274,7 @@ int main()
 		glDispatchCompute(32, 32, 1);
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT); //Wait for compute shader to complete
 
-		if (g_GuiData.activeShader == 4)
+		if (g_GuiData.activeShader == 4 && g_GuiData.activeShader == 5)
 		{
 			glUseProgram(g_GuiData.cmpShdRCLvl_0.m_program_ID);
 			glDispatchCompute(256, 256, 1);
@@ -284,6 +284,7 @@ int main()
 			g_GuiData.cmpShdRCLvl_0.setUniformArray("mouseY", 100, mouseYpos);
 			g_GuiData.cmpShdRCLvl_0.setUniformInt("mouseIndex", mouseIndex);
 		}
+		/*
 		else if (g_GuiData.activeShader == 5)
 		{
 			glUseProgram(g_GuiData.csRC_0.m_program_ID);
@@ -294,6 +295,7 @@ int main()
 			g_GuiData.csRC_0.setUniformArray("mouseY", 100, mouseYpos);
 			g_GuiData.csRC_0.setUniformInt("mouseIndex", mouseIndex);
 		}
+		*/
 
 		totalTime = std::chrono::duration<float>(std::chrono::high_resolution_clock::now() - startTime).count();
 		deltaTime = totalTime - lastFrameTotalTime;
@@ -319,7 +321,7 @@ int main()
 		//Set texture:
 		activeShader.setUniformTextureUnit("u_tex_0", 0);
 		activeShader.setUniformTextureUnit("u_tex_2", 2);
-		activeShader.setUniformTextureUnit("u_tex_3", 3);
+		//activeShader.setUniformTextureUnit("u_tex_3", 3);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
