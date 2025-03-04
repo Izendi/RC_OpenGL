@@ -98,6 +98,10 @@ void main()
 
     //Get the texture coordinates to sample the color from:
 
+    vec4 lv1_p0_colors[16];
+    vec4 lv1_p1_colors[16];
+    vec4 lv1_p2_colors[16];
+    vec4 lv1_p3_colors[16];
 
     // If we are outside the bilinear interpolation range for these probes (near the edges), then we will only sample the nearest probe for simplicity
     //          [### Look at fixing this later ###]
@@ -107,10 +111,6 @@ void main()
     }
     else
     {
-        vec4 lv1_p0_colors[16];
-        vec4 lv1_p1_colors[16];
-        vec4 lv1_p2_colors[16];
-        vec4 lv1_p3_colors[16];
 
         //Get the texture coordinates to sample
         ivec2 currentProbe_botLeft = ivec2(lvl1_BotLeft_currentProbeID.x * 4, lvl1_BotLeft_currentProbeID.y * 4);
