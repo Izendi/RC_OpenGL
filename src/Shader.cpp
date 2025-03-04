@@ -48,7 +48,7 @@ void Shader::readShaderCodeFromFile(const char* vs_path, const char* fs_path)
 	}
 	if (!fsFile.is_open())
 	{
-		std::cerr << "\nError: Unable to open fragment shader file at: " << vs_path << std::endl;
+		std::cerr << "\nError: Unable to open fragment shader file at: " << fs_path << std::endl;
 		ASSERT(false);
 	}
 

@@ -113,3 +113,9 @@ void ComputeShader::setUniformInt(std::string name, int val) const
 	GLCALL(glUniform1i(glGetUniformLocation(m_program_ID, n), val));
 
 }
+
+void ComputeShader::setUniformFloatValue(std::string name, float val) const
+{
+	const char* n = name.c_str();
+	GLCALL(glUniform1f(glGetUniformLocation(m_program_ID, n), val));
+}

@@ -57,6 +57,9 @@
     <ClCompile Include="src\GUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ComputeShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\vendor\glm\detail\_features.hpp">
@@ -959,6 +962,12 @@
     <ClInclude Include="src\GUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ComputeShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\debugAssert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\glm\detail\func_common.inl">
@@ -1375,5 +1384,15 @@
     <None Include="shaders\vs_RCv1.glsl" />
     <None Include="shaders\fs_RCv2.glsl" />
     <None Include="shaders\vs_RCv2.glsl" />
+    <None Include="shaders\compute\cs_Basic.glsl" />
+    <None Include="shaders\compute\rc_0.glsl" />
+    <None Include="shaders\compute\rc_lvl_0.glsl" />
+    <None Include="shaders\fs_RCFinal.glsl" />
+    <None Include="shaders\fs_RCTexTest.glsl" />
+    <None Include="shaders\fs_SDF_test.glsl" />
+    <None Include="shaders\vs_RCFinal.glsl" />
+    <None Include="shaders\vs_RCTexTest.glsl" />
+    <None Include="shaders\vs_SDF_test.glsl" />
+    <None Include="shaders\compute\rc_1.glsl" />
   </ItemGroup>
 </Project>
