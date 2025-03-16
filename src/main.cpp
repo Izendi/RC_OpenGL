@@ -22,6 +22,10 @@ float g_mouseY = 0.0f;
 float g_mouseClicked = 0.0f;
 bool mouseClicked = false;
 float g_lvl_0_interval = 2.0f;
+float g_lvl_1_interval = 4.0f;
+float g_lvl_2_interval = 8.0f;
+float g_lvl_3_interval = 16.0f;
+float g_lvl_4_interval = 32.0f;
 
 int g_xResolution = SCR_WIDTH;
 int g_yResolution = SCR_HEIGHT;
@@ -87,7 +91,14 @@ int main()
 
 	compShaderTexSize cmpShTxSize;
 
-	GuiData g_GuiData("../../shaders/compute/cs_Basic.glsl", "../../shaders/compute/rc_lvl_0.glsl", "../../shaders/compute/rc_0.glsl", "../../shaders/compute/rc_1.glsl");
+	GuiData g_GuiData
+	(
+		"../../shaders/compute/cs_Basic.glsl", 
+		"../../shaders/compute/rc_lvl_0.glsl", 
+		"../../shaders/compute/rc_0.glsl", 
+		"../../shaders/compute/rc_1.glsl", 
+		"../../shaders/compute/rc_4.glsl"
+	);
 
 	//Image 1 to write onto in compute shader:
 	uint32_t cmpTexID;
@@ -160,6 +171,18 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBindImageTexture(5, rc_3_tex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); //Uses image unit 5
+
+	// Img Cascade Level 4 real data texture:
+	uint32_t rc_4_tex;
+	GLCALL(glGenTextures(1, &rc_4_tex));
+	GLCALL(glActiveTexture(GL_TEXTURE7)); //The next call to glBindTexture will determine the texture assigned to this texture unit.
+	GLCALL(glBindTexture(GL_TEXTURE_2D, rc_4_tex));
+	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, cmpShTxSize.x_size, cmpShTxSize.y_size, 0, GL_RGBA, GL_FLOAT, NULL));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindImageTexture(6, rc_4_tex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); //Uses image unit 5
 
 
 	//Compute Shader Setup: END   --------------------------------------------
@@ -303,6 +326,15 @@ int main()
 	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, &maxUniformComponents);
 	std::cout << "\n\nMax uniform components: " << maxUniformComponents << std::endl;
 
+	int maxInvocations, maxSizeX, maxSizeY, maxSizeZ;
+	glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &maxInvocations);
+	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &maxSizeX);
+	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &maxSizeY);
+	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &maxSizeZ);
+
+	printf("\n\nMax Local Invocations: %d\n", maxInvocations);
+	printf("Max Workgroup Size: (%d, %d, %d)\n\n\n", maxSizeX, maxSizeY, maxSizeZ);
+
 	while (!glfwWindowShouldClose(up_window.get()))
 	{
 
@@ -324,7 +356,7 @@ int main()
 			// -----
 
 			glUseProgram(g_GuiData.csRC_0.m_program_ID);
-			glDispatchCompute(256, 256, 1);
+			glDispatchCompute(256, 256, 1); // Each dispatch is the number of probes in the x and y direction
 			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 			g_GuiData.csRC_0.setUniformArray("mouseX", 100, mouseXpos);
@@ -334,13 +366,27 @@ int main()
 
 
 			glUseProgram(g_GuiData.csRC_1.m_program_ID);
-			glDispatchCompute(128, 128, 1);
+			glDispatchCompute(128, 128, 1); // 64, 32, 16
 			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-			g_GuiData.csRC_0.setUniformArray("mouseX", 100, mouseXpos);
-			g_GuiData.csRC_0.setUniformArray("mouseY", 100, mouseYpos);
-			g_GuiData.csRC_0.setUniformInt("mouseIndex", mouseIndex);
-			g_GuiData.csRC_0.setUniformFloatValue("lvl_0_interval", g_lvl_0_interval);
+			g_GuiData.csRC_1.setUniformArray("mouseX", 100, mouseXpos);
+			g_GuiData.csRC_1.setUniformArray("mouseY", 100, mouseYpos);
+			g_GuiData.csRC_1.setUniformInt("mouseIndex", mouseIndex);
+			g_GuiData.csRC_1.setUniformFloatValue("lvl_0_interval", g_lvl_0_interval);
+
+			glUseProgram(g_GuiData.csRC_1.m_program_ID);
+			glDispatchCompute(16, 16, 1);
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+			g_GuiData.csRC_4.setUniformArray("mouseX", 100, mouseXpos);
+			g_GuiData.csRC_4.setUniformArray("mouseY", 100, mouseYpos);
+			g_GuiData.csRC_4.setUniformInt("mouseIndex", mouseIndex);
+			g_GuiData.csRC_4.setUniformFloatValue("lvl_0_interval", g_lvl_0_interval);
+			g_GuiData.csRC_4.setUniformFloatValue("lvl_1_interval", g_lvl_1_interval);
+			g_GuiData.csRC_4.setUniformFloatValue("lvl_2_interval", g_lvl_2_interval);
+			g_GuiData.csRC_4.setUniformFloatValue("lvl_3_interval", g_lvl_3_interval);
+			g_GuiData.csRC_4.setUniformFloatValue("lvl_4_interval", g_lvl_4_interval);
+
 		}
 		/*
 		else if (g_GuiData.activeShader == 5)
@@ -378,9 +424,10 @@ int main()
 
 		//Set texture:
 		activeShader.setUniformTextureUnit("u_tex_0", 0);
-		activeShader.setUniformTextureUnit("u_tex_2", 4);
+		activeShader.setUniformTextureUnit("u_tex_2", 2);
 		activeShader.setUniformTextureUnit("u_tex_3", 3);
 		activeShader.setUniformTextureUnit("u_tex_4", 4);
+		activeShader.setUniformTextureUnit("u_tex_rc4", 7);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);

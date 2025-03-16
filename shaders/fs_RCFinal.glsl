@@ -7,6 +7,7 @@ out vec4 FragColor;
 uniform vec4 ourColor;
 uniform sampler2D u_tex_3;
 uniform sampler2D u_tex_4;
+uniform sampler2D u_tex_rc4;
 
 uniform ivec2 screenRes; // This is probably not needed! Since we can use gl_FragCoord variable to get screen coords in this case. But if gl_fragCoord gives problems, it may still be needed.
 
@@ -203,7 +204,10 @@ void main()
         lv1_p3_avg_colors[i] = (lv1_p3_colors[i * 4] + lv1_p3_colors[i * 4 + 1] + lv1_p3_colors[i * 4 + 2] + lv1_p3_colors[i * 4 + 3]) / 4.0;
     }
     
-    //#HERE: Now we need t
+    //NOTE: Note in this case, we have selected the probes based on the fragments position
+
+    //#HERE: Now, assuming we have selected the correct probes for this fragment, we need to combine this color with the the probe 0 color, to create a final color value. (Something like that).
+    //          Make sure you are following the steps corectly.
 
 
     // ### CASCADE LEVEL 1 - END   -------------------------------------
@@ -217,6 +221,8 @@ void main()
     // -------
     
     FragColor = vec4(final_lerp_color.x, final_lerp_color.y, final_lerp_color.z, 1.0);
+    FragColor = vec4(final_lerp_color.x, final_lerp_color.y, final_lerp_color.z, 1.0);
+
     
     //# Test Outputs # 
     //ivec2 currentTexelCoord = ivec2(texCoord * texSize);

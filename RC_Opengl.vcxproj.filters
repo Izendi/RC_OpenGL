@@ -1394,5 +1394,6 @@
     <None Include="shaders\vs_RCTexTest.glsl" />
     <None Include="shaders\vs_SDF_test.glsl" />
     <None Include="shaders\compute\rc_1.glsl" />
+    <None Include="shaders\compute\rc_4.glsl" />
   </ItemGroup>
 </Project>
