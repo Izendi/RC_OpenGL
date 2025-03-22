@@ -59,7 +59,7 @@ void ComputeShader::checkComputeShaderCompileErrors(uint32_t computeShaderHandle
 	if (!success)
 	{
 		glGetShaderInfoLog(computeShaderHandle, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		std::cout << "ERROR::SHADER::COMPUTE::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 }
 
@@ -73,7 +73,7 @@ void ComputeShader::checkComputeShaderProgramLinkErrors(uint32_t computeShaderPr
 	if (!success)
 	{
 		glGetShaderInfoLog(computeShaderProgramHandle, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::LINK_FAILED\n" << infoLog << std::endl;
+		std::cout << "ERROR::SHADER::COMPUTE::LINK_FAILED\n" << infoLog << std::endl;
 	}
 }
 
