@@ -1399,5 +1399,7 @@
     <None Include="shaders\fs_RCTexTest2.glsl" />
     <None Include="shaders\compute\rc_3.glsl" />
     <None Include="shaders\compute\rc_2.glsl" />
+    <None Include="shaders\fs_RCTexTest_lvl2.glsl" />
+    <None Include="shaders\vs_RCTexTest_lvl2.glsl" />
   </ItemGroup>
 </Project>

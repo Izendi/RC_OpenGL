@@ -5,12 +5,10 @@ layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
 
 layout(rgba32f, binding = 5) uniform image2D imgOutput;
 
-uniform float mouseX[100];
-uniform float mouseY[100];
+uniform float mouseX[95];
+uniform float mouseY[95];
 
 uniform int mouseIndex;
-
-//Interval may as well be MAX LENGTH
 
 //### Need to set these or nothing will work ###
 //uniform float lvl_4_interval;

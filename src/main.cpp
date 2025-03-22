@@ -274,6 +274,12 @@ int main()
 		"../../shaders/vs_RCTexTest2.glsl",
 		"../../shaders/fs_RCTexTest2.glsl"
 	};
+
+	Shader sh_RCTexTest_lvl2
+	{
+		"../../shaders/vs_RCTexTest_lvl2.glsl",
+		"../../shaders/fs_RCTexTest_lvl2.glsl"
+	};
 	
 	/*
 	Shader sh_RCFinal
@@ -296,6 +302,8 @@ int main()
 	g_GuiData.shaderNames.push_back("RC Tex Test");
 	g_GuiData.shaders.push_back(sh_RCTexTest2);
 	g_GuiData.shaderNames.push_back("RC Tex Test 2");
+	g_GuiData.shaders.push_back(sh_RCTexTest_lvl2);
+	g_GuiData.shaderNames.push_back("RC Test - CS lvl 2");
 	//g_GuiData.shaders.push_back(sh_RCFinal);
 	//g_GuiData.shaderNames.push_back("RC Final");
 
@@ -408,6 +416,20 @@ int main()
 			g_GuiData.csRC_3.setUniformFloatValue("lvl_3_interval", g_lvl_3_interval);
 
 			glDispatchCompute(32, 32, 1);
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+			glUseProgram(g_GuiData.csRC_2.m_program_ID);
+
+			g_GuiData.csRC_2.setUniformArray("mouseX", 95, mouseXpos);
+			g_GuiData.csRC_2.setUniformArray("mouseY", 95, mouseYpos);
+			g_GuiData.csRC_2.setUniformInt("mouseIndex", mouseIndex);
+			g_GuiData.csRC_2.setUniformFloatValue("lvl_0_interval", g_lvl_0_interval);
+			g_GuiData.csRC_2.setUniformFloatValue("lvl_1_interval", g_lvl_1_interval);
+			g_GuiData.csRC_2.setUniformFloatValue("lvl_2_interval", g_lvl_2_interval);
+			//g_GuiData.csRC_2.setUniformFloatValue("lvl_3_interval", g_lvl_3_interval);
+			g_GuiData.csRC_2.setUniformTextureUnit("u_tex_rc3", 6);
+
+			glDispatchCompute(64, 64, 1);
 			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 
