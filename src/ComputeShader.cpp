@@ -120,9 +120,9 @@ void ComputeShader::setUniformFloatValue(std::string name, float val) const
 	GLCALL(glUniform1f(glGetUniformLocation(m_program_ID, n), val));
 }
 
-void Shader::setUniformTextureUnit(std::string name, unsigned int x)
+void ComputeShader::setUniformTextureUnit(std::string name, unsigned int x)
 {
 	const char* n = name.c_str();
-	auto val = glGetUniformLocation(shaderProgHandle, n);
+	auto val = glGetUniformLocation(m_program_ID, n);
 	GLCALL(glUniform1i(val, x));
 }

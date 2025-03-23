@@ -5,7 +5,7 @@ in vec2 texCoord;
 out vec4 FragColor;
 
 uniform vec4 ourColor;
-uniform sampler2D u_tex_2;
+uniform sampler2D u_tex_rc2;
 //uniform sampler2D u_tex_rc4;
 
 //The below is a method of getting the texture from textue unit 0 without manually having to send it in yourself.
@@ -13,7 +13,7 @@ uniform sampler2D u_tex_2;
 
 void main()
 {
-    vec4 texColor = texture(u_tex_2, texCoord);
+    vec4 texColor = texture(u_tex_rc2, texCoord);
     //FragColor = vec4(0.7, 0.2, 0.5, 1.0);
     FragColor = vec4(texColor.x, texColor.y, texColor.z, 1.0);
 }
