@@ -22,7 +22,6 @@ float sdfCircle(vec2 p, vec2 circelPos, float radius)
     return length(p - circelPos) - radius;
 }
 
-
 void main()
 {
     //We start at the top left and go row by row
