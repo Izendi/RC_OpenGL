@@ -163,31 +163,31 @@ vec4 get_N_plus_1_4RayProbeAveragedColorValue(uint thisIterationID)
     float iterID_3_y = floor(iterID_3 / float(workGroupSize_xyz.y));
     float iterID_3_x = iterID_3 - iterID_3_y;
 
-    uvec3 g_TLP_0 = workGroupSize_xyz * TLP_workGroupID_xyz * uvec3(uint(iterID_0_x), uint(iterID_0_y), 1);
-    uvec3 g_TLP_1 = workGroupSize_xyz * TLP_workGroupID_xyz * uvec3(uint(iterID_1_x), uint(iterID_1_y), 1);
-    uvec3 g_TLP_2 = workGroupSize_xyz * TLP_workGroupID_xyz * uvec3(uint(iterID_2_x), uint(iterID_2_y), 1);
-    uvec3 g_TLP_3 = workGroupSize_xyz * TLP_workGroupID_xyz * uvec3(uint(iterID_3_x), uint(iterID_3_y), 1);
+    uvec3 g_TLP_0 = workGroupSize_xyz * TLP_workGroupID_xyz + uvec3(uint(iterID_0_x), uint(iterID_0_y), 1);
+    uvec3 g_TLP_1 = workGroupSize_xyz * TLP_workGroupID_xyz + uvec3(uint(iterID_1_x), uint(iterID_1_y), 1);
+    uvec3 g_TLP_2 = workGroupSize_xyz * TLP_workGroupID_xyz + uvec3(uint(iterID_2_x), uint(iterID_2_y), 1);
+    uvec3 g_TLP_3 = workGroupSize_xyz * TLP_workGroupID_xyz + uvec3(uint(iterID_3_x), uint(iterID_3_y), 1);
 
     vec4 TLP_color = averageColorValuesAtNplus1_glInvocation(g_TLP_0, g_TLP_1, g_TLP_2, g_TLP_3);
 
-    uvec3 g_TRP_0 = workGroupSize_xyz * TRP_workGroupID_xyz * uvec3(uint(iterID_0_x), uint(iterID_0_y), 1);
-    uvec3 g_TRP_1 = workGroupSize_xyz * TRP_workGroupID_xyz * uvec3(uint(iterID_1_x), uint(iterID_1_y), 1);
-    uvec3 g_TRP_2 = workGroupSize_xyz * TRP_workGroupID_xyz * uvec3(uint(iterID_2_x), uint(iterID_2_y), 1);
-    uvec3 g_TRP_3 = workGroupSize_xyz * TRP_workGroupID_xyz * uvec3(uint(iterID_3_x), uint(iterID_3_y), 1);
+    uvec3 g_TRP_0 = workGroupSize_xyz * TRP_workGroupID_xyz + uvec3(uint(iterID_0_x), uint(iterID_0_y), 1);
+    uvec3 g_TRP_1 = workGroupSize_xyz * TRP_workGroupID_xyz + uvec3(uint(iterID_1_x), uint(iterID_1_y), 1);
+    uvec3 g_TRP_2 = workGroupSize_xyz * TRP_workGroupID_xyz + uvec3(uint(iterID_2_x), uint(iterID_2_y), 1);
+    uvec3 g_TRP_3 = workGroupSize_xyz * TRP_workGroupID_xyz + uvec3(uint(iterID_3_x), uint(iterID_3_y), 1);
 
     vec4 TRP_color = averageColorValuesAtNplus1_glInvocation(g_TRP_0, g_TRP_1, g_TRP_2, g_TRP_3);
 
-    uvec3 g_BLP_0 = workGroupSize_xyz * BLP_workGroupID_xyz * uvec3(uint(iterID_0_x), uint(iterID_0_y), 1);
-    uvec3 g_BLP_1 = workGroupSize_xyz * BLP_workGroupID_xyz * uvec3(uint(iterID_1_x), uint(iterID_1_y), 1);
-    uvec3 g_BLP_2 = workGroupSize_xyz * BLP_workGroupID_xyz * uvec3(uint(iterID_2_x), uint(iterID_2_y), 1);
-    uvec3 g_BLP_3 = workGroupSize_xyz * BLP_workGroupID_xyz * uvec3(uint(iterID_3_x), uint(iterID_3_y), 1);
+    uvec3 g_BLP_0 = workGroupSize_xyz * BLP_workGroupID_xyz + uvec3(uint(iterID_0_x), uint(iterID_0_y), 1);
+    uvec3 g_BLP_1 = workGroupSize_xyz * BLP_workGroupID_xyz + uvec3(uint(iterID_1_x), uint(iterID_1_y), 1);
+    uvec3 g_BLP_2 = workGroupSize_xyz * BLP_workGroupID_xyz + uvec3(uint(iterID_2_x), uint(iterID_2_y), 1);
+    uvec3 g_BLP_3 = workGroupSize_xyz * BLP_workGroupID_xyz + uvec3(uint(iterID_3_x), uint(iterID_3_y), 1);
 
     vec4 BLP_color = averageColorValuesAtNplus1_glInvocation(g_BLP_0, g_BLP_1, g_BLP_2, g_BLP_3);
 
-    uvec3 g_BRP_0 = workGroupSize_xyz * BRP_workGroupID_xyz * uvec3(uint(iterID_0_x), uint(iterID_0_y), 1);
-    uvec3 g_BRP_1 = workGroupSize_xyz * BRP_workGroupID_xyz * uvec3(uint(iterID_1_x), uint(iterID_1_y), 1);
-    uvec3 g_BRP_2 = workGroupSize_xyz * BRP_workGroupID_xyz * uvec3(uint(iterID_2_x), uint(iterID_2_y), 1);
-    uvec3 g_BRP_3 = workGroupSize_xyz * BRP_workGroupID_xyz * uvec3(uint(iterID_3_x), uint(iterID_3_y), 1);
+    uvec3 g_BRP_0 = workGroupSize_xyz * BRP_workGroupID_xyz + uvec3(uint(iterID_0_x), uint(iterID_0_y), 1);
+    uvec3 g_BRP_1 = workGroupSize_xyz * BRP_workGroupID_xyz + uvec3(uint(iterID_1_x), uint(iterID_1_y), 1);
+    uvec3 g_BRP_2 = workGroupSize_xyz * BRP_workGroupID_xyz + uvec3(uint(iterID_2_x), uint(iterID_2_y), 1);
+    uvec3 g_BRP_3 = workGroupSize_xyz * BRP_workGroupID_xyz + uvec3(uint(iterID_3_x), uint(iterID_3_y), 1);
 
     vec4 BRP_color = averageColorValuesAtNplus1_glInvocation(g_BRP_0, g_BRP_1, g_BRP_2, g_BRP_3);
 
