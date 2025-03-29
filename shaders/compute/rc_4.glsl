@@ -3,7 +3,7 @@
 // This is the maximum number of local invations you are allowed (1024), so you can't go above cascade level 4 with your current implementation unless you reduce the branching factor.
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
-layout(rgba32f, binding = 6) uniform image2D imgOutput;
+layout(rgba32f, binding = 7) uniform image2D imgOutput;
 
 uniform float mouseX[100];
 uniform float mouseY[100];

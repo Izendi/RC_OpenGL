@@ -106,7 +106,8 @@ int main()
 		"../../shaders/compute/rc_0.glsl", 
 		"../../shaders/compute/rc_1.glsl", 
 		"../../shaders/compute/rc_2.glsl",
-		"../../shaders/compute/rc_3.glsl"
+		"../../shaders/compute/rc_3.glsl",
+		"../../shaders/compute/rc_2_v2.glsl"
 	);
 
 	//Image 1 to write onto in compute shader:
@@ -180,6 +181,18 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBindImageTexture(5, rc_3_tex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); //Uses image unit 5
+
+	// Img Cascade Level 2 v2 real data texture:
+	uint32_t rc_2_v2_tex;
+	GLCALL(glGenTextures(1, &rc_2_v2_tex));
+	GLCALL(glActiveTexture(GL_TEXTURE7)); //The next call to glBindTexture will determine the texture assigned to this texture unit.
+	GLCALL(glBindTexture(GL_TEXTURE_2D, rc_2_v2_tex));
+	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, cmpShTxSize.x_size, cmpShTxSize.y_size, 0, GL_RGBA, GL_FLOAT, NULL));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindImageTexture(6, rc_2_v2_tex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); //Uses image unit 6
 
 	// Img Cascade Level 4 real data texture:
 	/*
@@ -265,7 +278,7 @@ int main()
 	Shader sh_RCTexTest
 	{
 		"../../shaders/vs_RCTexTest.glsl",
-		"../../shaders/fs_RCTexTest.glsl"
+		"../../shaders/fs_RCTexTest.glsl" //ACTING UP???
 	};
 
 	
@@ -278,7 +291,13 @@ int main()
 	Shader sh_RCTexTest_lvl2
 	{
 		"../../shaders/vs_RCTexTest_lvl2.glsl",
-		"../../shaders/fs_RCTexTest_lvl2.glsl"
+		"../../shaders/fs_RCTexTest_lvl2.glsl" //Using this????
+	};
+
+	Shader sh_RCTexTest2_v2
+	{
+		"../../shaders/vs_RCTexTest2_v2.glsl",
+		"../../shaders/fs_RCTexTest2_v2.glsl"
 	};
 	
 	/*
@@ -299,11 +318,13 @@ int main()
 	g_GuiData.shaders.push_back(sh_SDFTest);
 	g_GuiData.shaderNames.push_back("SDF Test");
 	g_GuiData.shaders.push_back(sh_RCTexTest);
-	g_GuiData.shaderNames.push_back("RC Tex Test");
+	g_GuiData.shaderNames.push_back("rc_2.glsl (V1) output");
 	g_GuiData.shaders.push_back(sh_RCTexTest2);
-	g_GuiData.shaderNames.push_back("RC Tex Test 2");
+	g_GuiData.shaderNames.push_back("rc_3.glsl output");
 	g_GuiData.shaders.push_back(sh_RCTexTest_lvl2);
-	g_GuiData.shaderNames.push_back("RC Test - CS lvl 2");
+	g_GuiData.shaderNames.push_back("rc_0.glsl output");
+	g_GuiData.shaders.push_back(sh_RCTexTest2_v2);
+	g_GuiData.shaderNames.push_back("rc_2_v2.glsl (V2) output");
 	//g_GuiData.shaders.push_back(sh_RCFinal);
 	//g_GuiData.shaderNames.push_back("RC Final");
 
@@ -372,7 +393,7 @@ int main()
 		glDispatchCompute(32, 32, 1);
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT); //Wait for compute shader to complete
 
-		if (g_GuiData.activeShader == 4 || g_GuiData.activeShader == 5 || g_GuiData.activeShader == 6)
+		if (g_GuiData.activeShader == 4 || g_GuiData.activeShader == 5 || g_GuiData.activeShader == 6 || g_GuiData.activeShader == 7)
 		{
 			glUseProgram(g_GuiData.cmpShdRCLvl_0.m_program_ID);
 
@@ -432,6 +453,20 @@ int main()
 			glDispatchCompute(64, 64, 1);
 			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
+			glUseProgram(g_GuiData.csRC_2_v2.m_program_ID);
+
+			g_GuiData.csRC_2_v2.setUniformArray("mouseX", 95, mouseXpos);
+			g_GuiData.csRC_2_v2.setUniformArray("mouseY", 95, mouseYpos);
+			g_GuiData.csRC_2_v2.setUniformInt("mouseIndex", mouseIndex);
+			g_GuiData.csRC_2_v2.setUniformFloatValue("lvl_0_interval", g_lvl_0_interval);
+			g_GuiData.csRC_2_v2.setUniformFloatValue("lvl_1_interval", g_lvl_1_interval);
+			g_GuiData.csRC_2_v2.setUniformFloatValue("lvl_2_interval", g_lvl_2_interval);
+			//g_GuiData.csRC_2.setUniformFloatValue("lvl_3_interval", g_lvl_3_interval);
+			g_GuiData.csRC_2_v2.setUniformTextureUnit("u_tex_rc3", 6);
+
+			glDispatchCompute(64, 64, 1);
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
 
 		}
 		/*
@@ -477,6 +512,7 @@ int main()
 		activeShader.setUniformTextureUnit("u_tex_rc1", 4);
 		activeShader.setUniformTextureUnit("u_tex_rc2", 5);
 		activeShader.setUniformTextureUnit("u_tex_rc3", 6);
+		activeShader.setUniformTextureUnit("u_tex_rc2_v2", 7);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);

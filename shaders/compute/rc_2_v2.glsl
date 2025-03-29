@@ -3,7 +3,7 @@
 // This is the maximum number of local invations you are allowed (1024), so you can't go above cascade level 4 with your current implementation unless you reduce the branching factor.
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
-layout(rgba32f, binding = 4) uniform image2D imgOutput;
+layout(rgba32f, binding = 6) uniform image2D imgOutput;
 
 uniform float mouseX[95];
 uniform float mouseY[95];
@@ -32,8 +32,8 @@ float sdfCircle(vec2 p, vec2 circelPos, float radius)
 
 float get_x_N_plus_1_ClosestLeftProbe()
 {
-    float localInvocation_x = float(gl_GlobalInvocationID.x); // changed this back to global (for testing)
-     
+    float localInvocation_x = float(gl_LocalInvocationID.x);
+
     if (localInvocation_x < 8)
     {
         return 0.0;
@@ -47,7 +47,7 @@ float get_x_N_plus_1_ClosestLeftProbe()
 
 float get_y_N_plus_1_ClosestLeftProbe()
 {
-    float localInvocation_y = float(gl_GlobalInvocationID.y); //Changed this back to global (for testing)
+    float localInvocation_y = float(gl_LocalInvocationID.y);
 
     if (localInvocation_y < 8)
     {
@@ -291,7 +291,7 @@ void main()
     value = value + NplusOneColor;
     //value.a = 1.0;
 
-    //value = vec4(1.0, 1.0, 0.0, 1.0);
+    //value = vec4(0.0, 0.0, 1.0, 1.0);
     imageStore(imgOutput, texelCoord, value);
 }
 

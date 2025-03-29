@@ -25,13 +25,14 @@
 
 struct GuiData
 {
-	GuiData(const char* cmpShaderPath, const char* cmpShaderRCLvl_0_path, const char* csRC_0_path, const char* csRC_1_path, const char* csRC_2_path, const char* csRC_3_path) :
+	GuiData(const char* cmpShaderPath, const char* cmpShaderRCLvl_0_path, const char* csRC_0_path, const char* csRC_1_path, const char* csRC_2_path, const char* csRC_3_path, const char* csRC_2_v2_path) :
 		cmpShader(cmpShaderPath), 
 		cmpShdRCLvl_0(cmpShaderRCLvl_0_path), 
 		csRC_0(csRC_0_path),
 		csRC_1(csRC_1_path),
 		csRC_2(csRC_2_path),
-		csRC_3(csRC_3_path)
+		csRC_3(csRC_3_path),
+		csRC_2_v2(csRC_2_v2_path)
 		{ }
 
 	int activeShader = 0;
@@ -43,6 +44,7 @@ struct GuiData
 	ComputeShader csRC_1;
 	ComputeShader csRC_2;
 	ComputeShader csRC_3;
+	ComputeShader csRC_2_v2;
 };
 
 // settings
