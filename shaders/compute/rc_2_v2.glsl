@@ -25,6 +25,10 @@ const float N_plus_1_ProbeSpacing = 16.0;
 
 const float N_plus_1_MaxNumberOfProbes = 32;
 
+const float N_Offset = 4.0;
+
+const float N_ProbeSpacing = 8.0;
+
 float sdfCircle(vec2 p, vec2 circelPos, float radius)
 {
     return length(p - circelPos) - radius;
@@ -32,30 +36,18 @@ float sdfCircle(vec2 p, vec2 circelPos, float radius)
 
 float get_x_N_plus_1_ClosestLeftProbe()
 {
-    float localInvocation_x = float(gl_LocalInvocationID.x);
+    float localInvocation_x = float(gl_WorkGroupID.x);
 
-    if (localInvocation_x < 8)
-    {
-        return 0.0;
-
-    }
-
-    float value = (localInvocation_x - N_plus_1_ProbeStartOffset) / N_plus_1_ProbeSpacing;
+    float value = ((localInvocation_x * N_ProbeSpacing + N_Offset)) / N_plus_1_ProbeSpacing;
 
     return floor(value);
 }
 
 float get_y_N_plus_1_ClosestLeftProbe()
 {
-    float localInvocation_y = float(gl_LocalInvocationID.y);
+    float localInvocation_y = float(gl_WorkGroupID.y);
 
-    if (localInvocation_y < 8)
-    {
-        return 0.0;
-
-    }
-
-    float value = (localInvocation_y - N_plus_1_ProbeStartOffset) / N_plus_1_ProbeSpacing;
+    float value = ((localInvocation_y * N_ProbeSpacing + N_Offset)) / N_plus_1_ProbeSpacing;
 
     return floor(value);
 }
@@ -153,6 +145,7 @@ vec4 get_N_plus_1_4RayProbeAveragedColorValue(uint thisIterationID)
 
     // ###
 
+    /*
     ivec2 TL_probeSamplePoint = ivec2((TLP_workGroupID_xyz.x * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset, (TLP_workGroupID_xyz.y * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset);
     ivec2 TR_probeSamplePoint = ivec2((TRP_workGroupID_xyz.x * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset, (TRP_workGroupID_xyz.y * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset);
     ivec2 BL_probeSamplePoint = ivec2((BLP_workGroupID_xyz.x * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset, (BLP_workGroupID_xyz.y * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset);
@@ -163,15 +156,27 @@ vec4 get_N_plus_1_4RayProbeAveragedColorValue(uint thisIterationID)
     vec4 color_BL = texelFetch(u_tex_rc3, BL_probeSamplePoint, 0);
     vec4 color_BR = texelFetch(u_tex_rc3, BR_probeSamplePoint, 0);
 
-    vec4 tempFinalCol = (color_TL + color_TR + color_BL + color_BR) / 4.0;
-    tempFinalCol.a = 1.0;
+    //vec4 tempFinalCol = (color_TL + color_TR + color_BL + color_BR) / 4.0;
+    //tempFinalCol.a = 1.0;
 
-    tempFinalCol.x = 0.0;
+    //tempFinalCol.x = 0.0;
+    //Something about the bilinear interpolation is wrong...
+    float fx_alt = (float((float(gl_WorkGroupID.x) * 8) + 4) - float((TLP_workGroupID_xyz.x * 16 + 8))) / 16;
+    float fy_alt = (float((float(gl_WorkGroupID.y) * 8) + 4) - float((TLP_workGroupID_xyz.y * 16 + 8))) / 16; // this depends on wether y goes up or down along the y axis from top to bottom (current assuming UP from top to bottom)
+
+    vec4 biLinInterpolatedFinalColor_alt = bilinearInterpolation(color_TL, color_TR, color_BL, color_BR, fx_alt, fy_alt);
 
     // @@@ Now that we know this kinda works, we need to see what effect adding in weightin and using bilinear filtering will ve <- HERE
 
-    return tempFinalCol;
-    
+    //return biLinInterpolatedFinalColor_alt;
+
+    //vec4 myVec = vec4(float(TLP_workGroupID_xy.y) / float(N_plus_1_MaxNumberOfProbes), 0.0, 0.0, 1.0);
+
+    //return vec4(fy_alt, 0.0, 0.0, 1.0);
+    return biLinInterpolatedFinalColor_alt;
+    //return myVec;
+    */
+
     // ###
 
     uvec3 workGroupSize_xyz = uvec3(16, 16, 1);
@@ -200,6 +205,9 @@ vec4 get_N_plus_1_4RayProbeAveragedColorValue(uint thisIterationID)
     float iterID_3_y = floor(iterID_3 / float(workGroupSize_xyz.y));
     float iterID_3_x = iterID_3 - iterID_3_y;
 
+
+    //Must be a problem somewhere here between lines 182 and 237, the rest all seems to work as expected, 
+    // but my probes are sampling colors from wrong parts of N+1 texture specifically to the right of them? WHY?  <= HERE
     uvec3 g_TLP_0 = workGroupSize_xyz * TLP_workGroupID_xyz + uvec3(uint(iterID_0_x), uint(iterID_0_y), 1);
     uvec3 g_TLP_1 = workGroupSize_xyz * TLP_workGroupID_xyz + uvec3(uint(iterID_1_x), uint(iterID_1_y), 1);
     uvec3 g_TLP_2 = workGroupSize_xyz * TLP_workGroupID_xyz + uvec3(uint(iterID_2_x), uint(iterID_2_y), 1);
@@ -235,8 +243,11 @@ vec4 get_N_plus_1_4RayProbeAveragedColorValue(uint thisIterationID)
 
     //We first need to find the x and y weight values. Remember, each invocation the compute shader runs on a probe, not a fragment, each probe is a workgroup an deach workgroup ius an indicidual dispatch
     // fx = ((workgroup.x * 8.0) + 4.0) - (TLP_workGroupID_xyz.x * 16 + 8) / (TRP_workGroupID_xyz.x * 16 + 8) - (TLP_workGroupID_xyz.x * 16 + 8)
-    float fx = (float((gl_WorkGroupID.x * 8) + 4) - float((TLP_workGroupID_xyz.x * 16 + 8))) / (float(TRP_workGroupID_xyz.x * 16 + 8) - float(TLP_workGroupID_xyz.x * 16 + 8));
-    float fy = (float((gl_WorkGroupID.y * 8) + 4) - float((TLP_workGroupID_xyz.y * 16 + 8))) / (float(BLP_workGroupID_xyz.y * 16 + 8) - float(TLP_workGroupID_xyz.y * 16 + 8)); // this depends on wether y goes up or down along the y axis from top to bottom (current assuming UP from top to bottom)
+    //float fx = (float((gl_WorkGroupID.x * 8) + 4) - float((TLP_workGroupID_xyz.x * 16 + 8))) / (float(TRP_workGroupID_xyz.x * 16 + 8) - float(TLP_workGroupID_xyz.x * 16 + 8));
+    //float fy = (float((gl_WorkGroupID.y * 8) + 4) - float((TLP_workGroupID_xyz.y * 16 + 8))) / (float(BLP_workGroupID_xyz.y * 16 + 8) - float(TLP_workGroupID_xyz.y * 16 + 8)); // this depends on wether y goes up or down along the y axis from top to bottom (current assuming UP from top to bottom)
+
+    float fx = (float((gl_WorkGroupID.x * 8) + 4) - float((TLP_workGroupID_xyz.x * 16 + 8))) / 16;
+    float fy = (float((gl_WorkGroupID.y * 8) + 4) - float((TLP_workGroupID_xyz.y * 16 + 8))) / 16;
 
     vec4 biLinInterpolatedFinalColor = bilinearInterpolation(TLP_color, TRP_color, BLP_color, BRP_color, fx, fy);
 

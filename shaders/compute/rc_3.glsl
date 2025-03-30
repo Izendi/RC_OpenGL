@@ -64,7 +64,7 @@ void main()
       
         if (distanceFromNearestSDF < 0.1)
         {
-            value = vec4(1.0, 1.0, 1.0, 1.0); //Make fragment blue if ray intersects with a sphere.
+            value = vec4(1.0, 1.0, 0.0, 1.0); //Make fragment blue if ray intersects with a sphere.
             rayHitCircle = true;
             break;
         }
@@ -97,7 +97,7 @@ void main()
         }
         else
         {
-            value = vec4(0.0, 0.0, 1.0, 1.0);
+            value = vec4(0.0, 0.0, 0.4, 1.0);
         }
     }
 

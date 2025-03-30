@@ -25,11 +25,16 @@ const float N_plus_1_ProbeSpacing = 16.0;
 
 const float N_plus_1_MaxNumberOfProbes = 32;
 
+const float N_Offset = 4.0;
+
+const float N_ProbeSpacing = 8.0;
+
 float sdfCircle(vec2 p, vec2 circelPos, float radius)
 {
     return length(p - circelPos) - radius;
 }
 
+/*
 float get_x_N_plus_1_ClosestLeftProbe()
 {
     float localInvocation_x = float(gl_GlobalInvocationID.x); // changed this back to global (for testing)
@@ -56,6 +61,25 @@ float get_y_N_plus_1_ClosestLeftProbe()
     }
 
     float value = (localInvocation_y - N_plus_1_ProbeStartOffset) / N_plus_1_ProbeSpacing;
+
+    return floor(value);
+}
+*/
+
+float get_x_N_plus_1_ClosestLeftProbe()
+{
+    float localInvocation_x = float(gl_WorkGroupID.x);
+
+    float value = ((localInvocation_x * N_ProbeSpacing + N_Offset)) / N_plus_1_ProbeSpacing;
+
+    return floor(value);
+}
+
+float get_y_N_plus_1_ClosestLeftProbe()
+{
+    float localInvocation_y = float(gl_WorkGroupID.y);
+
+    float value = ((localInvocation_y * N_ProbeSpacing + N_Offset)) / N_plus_1_ProbeSpacing;
 
     return floor(value);
 }
