@@ -151,6 +151,29 @@ vec4 get_N_plus_1_4RayProbeAveragedColorValue(uint thisIterationID)
     uvec3 BLP_workGroupID_xyz = uvec3(uint(TLP_workGroupID_xy.x), uint(TLP_workGroupID_xy.y + 1), 1);
     uvec3 BRP_workGroupID_xyz = uvec3(uint(TLP_workGroupID_xy.x + 1), uint(TLP_workGroupID_xy.y + 1), 1);
 
+    // ###
+
+    ivec2 TL_probeSamplePoint = ivec2((TLP_workGroupID_xyz.x * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset, (TLP_workGroupID_xyz.y * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset);
+    ivec2 TR_probeSamplePoint = ivec2((TRP_workGroupID_xyz.x * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset, (TRP_workGroupID_xyz.y * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset);
+    ivec2 BL_probeSamplePoint = ivec2((BLP_workGroupID_xyz.x * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset, (BLP_workGroupID_xyz.y * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset);
+    ivec2 BR_probeSamplePoint = ivec2((BRP_workGroupID_xyz.x * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset, (BRP_workGroupID_xyz.y * N_plus_1_ProbeSpacing) + N_plus_1_ProbeStartOffset);
+    
+    vec4 color_TL = texelFetch(u_tex_rc3, TL_probeSamplePoint, 0);
+    vec4 color_TR = texelFetch(u_tex_rc3, TR_probeSamplePoint, 0);
+    vec4 color_BL = texelFetch(u_tex_rc3, BL_probeSamplePoint, 0);
+    vec4 color_BR = texelFetch(u_tex_rc3, BR_probeSamplePoint, 0);
+
+    vec4 tempFinalCol = (color_TL + color_TR + color_BL + color_BR) / 4.0;
+    tempFinalCol.a = 1.0;
+
+    tempFinalCol.x = 0.0;
+
+    // @@@ Now that we know this kinda works, we need to see what effect adding in weightin and using bilinear filtering will ve <- HERE
+
+    return tempFinalCol;
+    
+    // ###
+
     uvec3 workGroupSize_xyz = uvec3(16, 16, 1);
 
     // to find the localInvocation, we first need to find the interation ID and use that to reverse engineer the local invocation:
@@ -223,6 +246,26 @@ vec4 get_N_plus_1_4RayProbeAveragedColorValue(uint thisIterationID)
 
 void main()
 {
+    // 1 - Find the current level N probe that this ray is being cast from [Lets check this by outputting red on even and blue on odd to see if each ray is assigning color values correctly]
+    // WORKING? -> YES
+
+    // 2 - Use that probes postion to find the 4 TL, TR, BL, BR N+1 probes. [Lets get their texture color ignore weight and output]
+    // WORKING? -> 
+
+    // 3 - Use the current Rays angle to find the 4 rays coresponding to the current rays general direction in level N+1
+
+    // 4 - For each of the 4 N+1 level probes, average the color valeus from the 4 coresponding rays and store them in 4 separate vec4s
+
+    // 5 - Find the x and y relative weight values using the position of the current level N probe relative to the N+1 4 closest probes
+
+    // 6 - Use those weight values to bilinearly interpolate between the 4 stored color values to produce a single color value.
+
+    // 7 - Add that final color value to the contribution from the current rays result and store that value in the level N texture location assigned.
+
+    // 8 - Repeat for the remaining levels until all levels are complete.
+
+
+
     //We start at the top left and go row by row
     uint iterationID = (gl_LocalInvocationID.x) + gl_LocalInvocationID.y * gl_WorkGroupSize.x;
 
@@ -261,7 +304,7 @@ void main()
 
         if (distanceFromNearestSDF < 0.1)
         {
-            value = vec4(0.0, 0.0, 1.0, 1.0); //Make fragment blue if ray intersects with a sphere.
+            value = vec4(1.0, 0.0, 0.0, 1.0); //Make fragment blue if ray intersects with a sphere.
 
             break;
         }
@@ -290,6 +333,21 @@ void main()
 
     value = value + NplusOneColor;
     //value.a = 1.0;
+
+    /*
+    bool isEvenWrkspce = ((gl_WorkGroupID.x + gl_WorkGroupID.y) % 2 == 0);
+    bool isOddWrkspce = ((gl_WorkGroupID.x + gl_WorkGroupID.y) % 2 != 0);
+
+    
+    if (isEvenWrkspce)
+    {
+        value = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+    else
+    {
+        value = vec4(0.0, 0.0, 1.0, 1.0);
+    }
+    */
 
     //value = vec4(0.0, 0.0, 1.0, 1.0);
     imageStore(imgOutput, texelCoord, value);

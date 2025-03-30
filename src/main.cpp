@@ -529,7 +529,7 @@ int main()
 
 		//This is for mouse input stuff: (A bit hacky, but it works):
 
-		if (mouseIndex < 100 && g_mouseClicked == 0.0f && mouseClicked == true)
+		if (mouseIndex < 95 && g_mouseClicked == 0.0f && mouseClicked == true)
 		{
 			mouseXpos[mouseIndex] = (float)g_mouseX;
 			mouseYpos[mouseIndex] = (float)g_mouseY;

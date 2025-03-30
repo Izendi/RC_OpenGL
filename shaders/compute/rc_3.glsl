@@ -57,12 +57,15 @@ void main()
     float radius = 20.0;
     float totalRayTravelDistance = 0.0;
 
+    bool rayHitCircle = false;
+
     for (int i = 0; i < 10; i++)
     {
       
         if (distanceFromNearestSDF < 0.1)
         {
-            value = vec4(0.0, 1.0, 0.0, 1.0); //Make fragment blue if ray intersects with a sphere.
+            value = vec4(1.0, 1.0, 1.0, 1.0); //Make fragment blue if ray intersects with a sphere.
+            rayHitCircle = true;
             break;
         }
 
@@ -82,6 +85,23 @@ void main()
         ray = ray + dirVec * distanceFromNearestSDF;
 
     }
+
+    bool isEvenWrkspce = ((gl_WorkGroupID.x + gl_WorkGroupID.y) % 2 == 0);
+    bool isOddWrkspce = ((gl_WorkGroupID.x + gl_WorkGroupID.y) % 2 != 0);
+
+    if (!rayHitCircle)
+    {
+        if (isEvenWrkspce)
+        {
+            value = vec4(0.0, 0.0, 0.0, 1.0);
+        }
+        else
+        {
+            value = vec4(0.0, 0.0, 1.0, 1.0);
+        }
+    }
+
+    
 
     //value = vec4(0.5, 0.0, 1.0, 1.0);
     imageStore(imgOutput, texelCoord, value);
