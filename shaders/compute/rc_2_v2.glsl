@@ -189,21 +189,21 @@ vec4 get_N_plus_1_4RayProbeAveragedColorValue(uint thisIterationID)
     // the 4 that we need to convert to global interation IDs, one for each of the 4 rays
     float iterID_0 = thisIterationID * 4;
     float iterID_0_y = floor(iterID_0 / float(workGroupSize_xyz.y));
-    float iterID_0_x = iterID_0 - iterID_0_y;
+    float iterID_0_x = iterID_0 - (iterID_0_y*16);
 
     // N+1 GlobalInvocationID = WorkGroupID * workGroupSize * localInvocationID
 
     float iterID_1 = iterID_0 + 1;
     float iterID_1_y = floor(iterID_1 / float(workGroupSize_xyz.y));
-    float iterID_1_x = iterID_1 - iterID_1_y;
+    float iterID_1_x = iterID_1 - (iterID_1_y * 16);
 
     float iterID_2 = iterID_0 + 2;
     float iterID_2_y = floor(iterID_2 / float(workGroupSize_xyz.y));
-    float iterID_2_x = iterID_2 - iterID_2_y;
+    float iterID_2_x = iterID_2 - (iterID_2_y * 16);
 
     float iterID_3 = iterID_0 + 3;
     float iterID_3_y = floor(iterID_3 / float(workGroupSize_xyz.y));
-    float iterID_3_x = iterID_3 - iterID_3_y;
+    float iterID_3_x = iterID_3 - (iterID_3_y * 16);
 
 
     //Must be a problem somewhere here between lines 182 and 237, the rest all seems to work as expected, 
