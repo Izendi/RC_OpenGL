@@ -466,7 +466,7 @@ int main()
 			g_GuiData.csRC_1.setUniformFloatValue("lvl_1_interval", g_lvl_1_interval);
 			g_GuiData.csRC_1.setUniformTextureUnit("u_tex_rc2_v2", 7);
 
-			glDispatchCompute(128, 128, 1); // 64, 32, 16
+			glDispatchCompute(128, 128, 1); // 64, 32, 16  //Sends to texture unit 4, which needs to be used for rc_0
 			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 
