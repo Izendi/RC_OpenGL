@@ -306,6 +306,12 @@ int main()
 		"../../shaders/fs_RCTexTest_RC1.glsl"
 	};
 	
+	Shader sh_RCTexTest_RC0
+	{
+		"../../shaders/vs_RCTexTest_RC0.glsl",
+		"../../shaders/fs_RCTexTest_RC0.glsl"
+	};
+
 	/*
 	Shader sh_RCFinal
 	{
@@ -333,6 +339,8 @@ int main()
 	g_GuiData.shaderNames.push_back("rc_2_v2.glsl (V2) output");
 	g_GuiData.shaders.push_back(sh_RCTexTest_RC1);
 	g_GuiData.shaderNames.push_back("rc_1.glsl output");
+	g_GuiData.shaders.push_back(sh_RCTexTest_RC0);
+	g_GuiData.shaderNames.push_back("rc_0.glsl output");
 	//g_GuiData.shaders.push_back(sh_RCFinal);
 	//g_GuiData.shaderNames.push_back("RC Final");
 
@@ -401,7 +409,7 @@ int main()
 		glDispatchCompute(32, 32, 1);
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT); //Wait for compute shader to complete
 
-		if (g_GuiData.activeShader == 4 || g_GuiData.activeShader == 5 || g_GuiData.activeShader == 6 || g_GuiData.activeShader == 7 || g_GuiData.activeShader == 8)
+		if (g_GuiData.activeShader == 4 || g_GuiData.activeShader == 5 || g_GuiData.activeShader == 6 || g_GuiData.activeShader == 7 || g_GuiData.activeShader == 8 || g_GuiData.activeShader == 9)
 		{
 			glUseProgram(g_GuiData.cmpShdRCLvl_0.m_program_ID);
 
@@ -476,6 +484,7 @@ int main()
 			g_GuiData.csRC_0.setUniformArray("mouseY", 95, mouseYpos);
 			g_GuiData.csRC_0.setUniformInt("mouseIndex", mouseIndex);
 			g_GuiData.csRC_0.setUniformFloatValue("lvl_0_interval", g_lvl_0_interval);
+			g_GuiData.csRC_0.setUniformTextureUnit("u_tex_rc1", 4);
 
 			glDispatchCompute(256, 256, 1); // Each dispatch is the number of probes in the x and y direction
 			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
