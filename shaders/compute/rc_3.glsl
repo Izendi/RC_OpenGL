@@ -64,7 +64,7 @@ void main()
       
         if (distanceFromNearestSDF < 0.1)
         {
-            value = vec4(1.0, 1.0, 0.0, 1.0); //Make fragment blue if ray intersects with a sphere.
+            value = vec4(0.0, 1.0, 0.0, 1.0); //Make fragment blue if ray intersects with a sphere.
             rayHitCircle = true;
             break;
         }
@@ -86,6 +86,7 @@ void main()
 
     }
 
+    /*
     bool isEvenWrkspce = ((gl_WorkGroupID.x + gl_WorkGroupID.y) % 2 == 0);
     bool isOddWrkspce = ((gl_WorkGroupID.x + gl_WorkGroupID.y) % 2 != 0);
 
@@ -100,7 +101,7 @@ void main()
             value = vec4(0.0, 0.0, 0.4, 1.0);
         }
     }
-
+    */
     
 
     //value = vec4(0.5, 0.0, 1.0, 1.0);
