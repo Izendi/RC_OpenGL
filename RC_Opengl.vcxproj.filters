@@ -1404,5 +1404,11 @@
     <None Include="shaders\compute\rc_2_v2.glsl" />
     <None Include="shaders\fs_RCTexTest2_v2.glsl" />
     <None Include="shaders\vs_RCTexTest2_v2.glsl" />
+    <None Include="shaders\fs_RCTexTest_RC0.glsl" />
+    <None Include="shaders\fs_RCTexTest_RC1.glsl" />
+    <None Include="shaders\vs_RCTexTest_RC0.glsl" />
+    <None Include="shaders\vs_RCTexTest_RC1.glsl" />
+    <None Include="shaders\vs_finalDisplay.glsl" />
+    <None Include="shaders\fs_finalDisplay.glsl" />
   </ItemGroup>
 </Project>

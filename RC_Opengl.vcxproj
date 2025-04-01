@@ -473,6 +473,7 @@
     <None Include="shaders\compute\rc_4.glsl" />
     <None Include="shaders\compute\rc_lvl_0.glsl" />
     <None Include="shaders\fs_Basic.glsl" />
+    <None Include="shaders\fs_finalDisplay.glsl" />
     <None Include="shaders\fs_RCFinal.glsl" />
     <None Include="shaders\fs_RCTexTest.glsl" />
     <None Include="shaders\fs_RCTexTest2.glsl" />
@@ -484,6 +485,7 @@
     <None Include="shaders\fs_RCv2.glsl" />
     <None Include="shaders\fs_SDF_test.glsl" />
     <None Include="shaders\vs_Basic.glsl" />
+    <None Include="shaders\vs_finalDisplay.glsl" />
     <None Include="shaders\vs_RCFinal.glsl" />
     <None Include="shaders\vs_RCTexTest.glsl" />
     <None Include="shaders\vs_RCTexTest2.glsl" />
