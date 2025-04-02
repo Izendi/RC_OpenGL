@@ -16,6 +16,7 @@
 
 #include "computeShader.h"
 
+#include <glm/glm.hpp>
 
 //Basic Error Checking
 #define ASSERT(x) if (!(x)) __debugbreak();

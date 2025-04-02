@@ -17,7 +17,7 @@ std::pair<std::unique_ptr<GLFWwindow, void(*)(GLFWwindow*)>, ImGuiIO&> SetUpGui(
 	return { std::move(p_glfw_Window), io };
 }
 
-void RenderGui(GuiData& guiData, float deltaTime, int mouseIndex)
+void RenderGui(GuiData& guiData, float deltaTime, int mouseIndex, glm::vec3& g_currentColor, glm::vec4& storedColor, float& interval_0, float& interval_1, float& interval_2, float& interval_3)
 {
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -28,8 +28,10 @@ void RenderGui(GuiData& guiData, float deltaTime, int mouseIndex)
 
 	ImGui::Begin("Settings");
 
+
 	// Button with a label "Call MyFunction"
 	if (ImGui::Button("Recompile Shaders")) {
+
 		// Call the C++ function once when the button is clicked
 		for(int i = 0; i < guiData.shaders.size(); i++)
 		{
@@ -51,6 +53,29 @@ void RenderGui(GuiData& guiData, float deltaTime, int mouseIndex)
 			guiData.activeShader = i;
 		}
 	}
+
+	ImGui::Spacing();
+	ImGui::Spacing();
+
+	ImGui::Text("Light & Interval Settings");
+
+	ImGui::ColorEdit4("Select Color", &storedColor.r);
+
+	g_currentColor.r = storedColor.r;
+	g_currentColor.g = storedColor.g;
+	g_currentColor.b = storedColor.b;
+
+
+	//Use drag float instead to type or drag:
+	//example:
+	/*
+	if (ImGui::DragFloat3("Position XYZ", &pos[0], v_speed))  
+	{
+	*/
+	ImGui::SliderFloat("RC_0 Interval", &interval_0, 0.0f, 200.0f);
+	ImGui::SliderFloat("RC_1 Interval", &interval_1, 0.0f, 200.0f);
+	ImGui::SliderFloat("RC_2 Interval", &interval_2, 0.0f, 200.0f);
+	ImGui::SliderFloat("RC_3 Interval", &interval_3, 0.0f, 200.0f);
 
 	ImGui::Spacing();
 	ImGui::Spacing();

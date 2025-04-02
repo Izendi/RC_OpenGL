@@ -5,10 +5,13 @@ layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 layout(rgba32f, binding = 6) uniform image2D imgOutput;
 
-uniform float mouseX[95];
-uniform float mouseY[95];
+uniform float mouseX[20];
+uniform float mouseY[20];
+uniform vec3 u_circleColor[20];
 
 uniform int mouseIndex;
+
+//uniform vec4 u_circleColor;
 
 //### Need to set these or nothing will work ###
 //uniform float lvl_4_interval;
@@ -302,6 +305,8 @@ void main()
     vec4 value = vec4(0.1, 0.1, 0.1, 1.0); //Default value if ray does not hit a sphere.
 
     float distanceFromNearestSDF = lvl_2_interval - 0.1;
+    float oldDistanceFromNearestSDF = distanceFromNearestSDF;
+    int nearestIndex = 0;
 
     //Remember, canvas will be 512 by 512 in this test
 
@@ -315,8 +320,12 @@ void main()
 
         if (distanceFromNearestSDF < 0.1)
         {
-            value = vec4(1.0, 0.0, 0.0, 1.0); //Make fragment red if ray intersects with a sphere.
+            //value = vec4(1.0, 0.0, 0.0, 1.0); //Make fragment red if ray intersects with a sphere.
+            //value = u_circleColor;
+            nearestIndex = nearestIndex - 1;
+            value = vec4(u_circleColor[nearestIndex].x, u_circleColor[nearestIndex].y, u_circleColor[nearestIndex].z, 1.0);
 
+            value.a = 1.0;
             break;
         }
 
@@ -331,6 +340,13 @@ void main()
             float newDistance = sdfCircle(ray, circlePosition, radius);
 
             distanceFromNearestSDF = min(distanceFromNearestSDF, newDistance);
+
+            if (distanceFromNearestSDF != oldDistanceFromNearestSDF)
+            {
+                nearestIndex = ii;
+            }
+
+            oldDistanceFromNearestSDF = distanceFromNearestSDF;
         }
 
         ray = ray + dirVec * distanceFromNearestSDF;

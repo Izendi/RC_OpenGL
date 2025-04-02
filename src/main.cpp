@@ -21,6 +21,8 @@ float g_mouseX = 0.0f;
 float g_mouseY = 0.0f;
 float g_mouseClicked = 0.0f;
 bool mouseClicked = false;
+
+bool isGuiHovered = false;
 /*
 float g_lvl_0_interval = 2.0f;
 float g_lvl_1_interval = 4.0f;
@@ -29,10 +31,10 @@ float g_lvl_3_interval = 16.0f;
 float g_lvl_4_interval = 32.0f;
 */
 
-float g_lvl_0_interval = 5.0f;
-float g_lvl_1_interval = 10.0f;
-float g_lvl_2_interval = 20.0f;
-float g_lvl_3_interval = 40.0f;
+float g_lvl_0_interval = 15.0f;
+float g_lvl_1_interval = 30.0f;
+float g_lvl_2_interval = 60.0f;
+float g_lvl_3_interval = 120.0f;
 //float g_lvl_4_interval = 0.0f;
 
 int g_xResolution = SCR_WIDTH;
@@ -44,10 +46,15 @@ struct compShaderTexSize
 	uint32_t y_size = 512;
 };
 
-float mouseXpos[95] = { 0 };
-float mouseYpos[95] = { 0 };
+float mouseXpos[20] = { 0 };
+float mouseYpos[20] = { 0 };
+glm::vec3 circleColor[20];
+
 int mouseIndex = 0;
 unsigned int frameCount = 0;
+
+glm::vec3 g_currentColor(0.0f, 0.0f, 0.0f);
+glm::vec4 storedColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 int main()
 {
@@ -415,7 +422,7 @@ int main()
 		glDispatchCompute(32, 32, 1);
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT); //Wait for compute shader to complete
 
-		if (g_GuiData.activeShader == 4 || g_GuiData.activeShader == 5 || g_GuiData.activeShader == 6 || g_GuiData.activeShader == 7 || g_GuiData.activeShader == 8 || g_GuiData.activeShader == 9)
+		if (g_GuiData.activeShader == 4 || g_GuiData.activeShader == 5 || g_GuiData.activeShader == 6 || g_GuiData.activeShader == 7 || g_GuiData.activeShader == 8 || g_GuiData.activeShader == 9 || g_GuiData.activeShader == 10)
 		{
 			glUseProgram(g_GuiData.cmpShdRCLvl_0.m_program_ID);
 
@@ -425,7 +432,6 @@ int main()
 
 			glDispatchCompute(256, 256, 1);
 			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-		
 
 			// -----
 
@@ -516,6 +522,31 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); 
 
+
+		//This is for mouse input stuff: (A bit hacky, but it works):
+
+		if (mouseIndex < 20 && g_mouseClicked == 0.0f && mouseClicked == true)
+		{
+			if (!isGuiHovered)
+			{
+				mouseXpos[mouseIndex] = (float)g_mouseX;
+				mouseYpos[mouseIndex] = (float)g_mouseY;
+
+				circleColor[mouseIndex] = g_currentColor;
+
+				std::cout << "\nxPos[" << mouseIndex << "] = " << mouseXpos[mouseIndex] << std::endl;
+				std::cout << "yPos[" << mouseIndex << "] = " << mouseYpos[mouseIndex] << "\n" << std::endl;
+
+				std::cout << "\ncurrent color => [" << circleColor[mouseIndex].x << ", " << circleColor[mouseIndex].y << ", " << circleColor[mouseIndex].z << "] \n" << std::endl;
+
+				std::cout << "\nmi = " << mouseIndex << std::endl;
+
+				mouseIndex = mouseIndex + 1;
+
+				g_mouseClicked = 1.0f;
+			}
+		}
+
 		Shader& activeShader = g_GuiData.shaders[g_GuiData.activeShader];
 
 		activeShader.bindProgram();
@@ -524,8 +555,9 @@ int main()
 		activeShader.setUniformFloat("uMousePressed", g_mouseClicked);
 		activeShader.setUniform2fv("uMousePos", g_mouseX, g_mouseY);
 		activeShader.setUniform2fv("uResolution", g_xResolution, g_yResolution);
-		activeShader.setUniformArray("mouseX", 100, mouseXpos);
-		activeShader.setUniformArray("mouseY", 100, mouseYpos);
+		activeShader.setUniformArray("mouseX", 20, mouseXpos);
+		activeShader.setUniformArray("mouseY", 20, mouseYpos);
+		activeShader.setUniformVec3Array("u_circleColor", 20, circleColor);
 		activeShader.setUniformInt("mouseIndex", mouseIndex);
 
 		activeShader.setUniform2iv("screenRes", g_xResolution, g_yResolution);
@@ -548,7 +580,7 @@ int main()
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
-		RenderGui(g_GuiData, deltaTime, mouseIndex);
+		RenderGui(g_GuiData, deltaTime, mouseIndex, g_currentColor, storedColor, g_lvl_0_interval, g_lvl_1_interval, g_lvl_2_interval, g_lvl_3_interval);
 
 		/* Swap front and back buffers */
 		glfwSwapBuffers(up_window.get());
@@ -558,23 +590,6 @@ int main()
 
 		lastFrameTotalTime = totalTime;
 
-		//This is for mouse input stuff: (A bit hacky, but it works):
-
-		if (mouseIndex < 95 && g_mouseClicked == 0.0f && mouseClicked == true)
-		{
-			mouseXpos[mouseIndex] = (float)g_mouseX;
-			mouseYpos[mouseIndex] = (float)g_mouseY;
-
-			std::cout << "\nxPos[" << mouseIndex << "] = " << mouseXpos[mouseIndex] << std::endl;
-			std::cout << "yPos[" << mouseIndex << "] = " << mouseYpos[mouseIndex] << "\n" << std::endl;
-
-
-			std::cout << "\nmi = " << mouseIndex << std::endl;
-
-			mouseIndex = mouseIndex + 1;
-
-			g_mouseClicked = 1.0f;
-		}
 	}
 
 	ImGui_ImplOpenGL3_Shutdown();
@@ -582,8 +597,7 @@ int main()
 	ImGui::DestroyContext();
 
 	glfwTerminate();
-
-
+ 
 	return 0;
 }
 
@@ -617,6 +631,17 @@ void mouse_pos_callback(GLFWwindow* window, double xPos, double yPos)
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT) { // Check for left mouse button
+		if (action == GLFW_PRESS) {
+			//g_mouseClicked = 1.0f; // Pressed
+			//mouseClicked = true;
+		}
+		else if (action == GLFW_RELEASE) {
+			//g_mouseClicked = 0.0f; // Released
+			//mouseClicked = false;
+		}
+	}
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT) { // Check for left mouse button
 		if (action == GLFW_PRESS) {
 			//g_mouseClicked = 1.0f; // Pressed
 			mouseClicked = true;

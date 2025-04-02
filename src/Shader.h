@@ -52,6 +52,7 @@ public:
 	void setUniformMat4(std::string name, GLboolean transpose, const GLfloat* mat);
 	void setUniform4fv(std::string name, glm::vec4& vec) const;
 	void setUniformArray(std::string name, uint32_t size, float* array);
+	void setUniformVec3Array(std::string name, uint32_t size, glm::vec3* array);
 
 	void bindProgram() const;
 

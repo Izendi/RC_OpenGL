@@ -4,8 +4,8 @@ in vec2 texCoord;
 
 out vec4 FragColor;
 
-uniform vec4 ourColor;
-uniform sampler2D u_tex_0;
+//uniform vec4 ourColor;
+uniform sampler2D u_tex_rc0;
 
 uniform float u_resolution_x;
 uniform float u_resolution_y;
@@ -25,10 +25,15 @@ vec4 bilinearInterpolation(vec4 tl, vec4 tr, vec4 bl, vec4 br, float fx, float f
 
 vec4 getCombinedProbeColor(vec2 probeCoord)
 {
-    vec4 colorValue_0 = texelFetch(u_tex_0, ivec2(int(probeCoord.x * 2), int(probeCoord.y * 2)), 0);
-    vec4 colorValue_1 = texelFetch(u_tex_0, ivec2(int(probeCoord.x * 2 + 1), int(probeCoord.y * 2)), 0);
-    vec4 colorValue_2 = texelFetch(u_tex_0, ivec2(int(probeCoord.x * 2), int(probeCoord.y * 2 + 1)), 0);
-    vec4 colorValue_3 = texelFetch(u_tex_0, ivec2(int(probeCoord.x * 2 + 1), int(probeCoord.y * 2 + 1)), 0);
+    vec4 colorValue_0 = texelFetch(u_tex_rc0, ivec2(int(probeCoord.x * 2), int(probeCoord.y * 2)), 0);
+    vec4 colorValue_1 = texelFetch(u_tex_rc0, ivec2(int(probeCoord.x * 2 + 1), int(probeCoord.y * 2)), 0);
+    vec4 colorValue_2 = texelFetch(u_tex_rc0, ivec2(int(probeCoord.x * 2), int(probeCoord.y * 2 + 1)), 0);
+    vec4 colorValue_3 = texelFetch(u_tex_rc0, ivec2(int(probeCoord.x * 2 + 1), int(probeCoord.y * 2 + 1)), 0);
+
+    colorValue_0 = colorValue_0 / 4.0;
+    colorValue_1 = colorValue_1 / 4.0;
+    colorValue_2 = colorValue_2 / 4.0;
+    colorValue_3 = colorValue_3 / 4.0;
 
     vec4 combinedColor = colorValue_0 + colorValue_1 + colorValue_2 + colorValue_3;
 
@@ -45,7 +50,7 @@ void main()
     float x_probe_R = x_probe_L + 1;
     float y_probe_T = y_probe_B + 1;
     
-    vec2 TL_probe_coord = vec2(x_probe_L, x_probe_R);
+    vec2 TL_probe_coord = vec2(x_probe_L, y_probe_T);
     vec2 TR_probe_coord = vec2(x_probe_R, y_probe_T);
     vec2 BL_probe_coord = vec2(x_probe_L, y_probe_B);
     vec2 BR_probe_coord = vec2(x_probe_R, y_probe_B);
@@ -81,7 +86,7 @@ void main()
     //FragColor = vec4(0.7, 0.2, 0.5, 1.0);
     //FragColor = vec4(texColor.x, texColor.y, texColor.z, 1.0);
 
-    vec4 testFinalColor = vec4(1.0, 0.0, 1.0, 1.0);
+    //vec4 testFinalColor = vec4(1.0, 0.0, 1.0, 1.0);
 
     FragColor = finalColor;
     //FragColor = testFinalColor;
