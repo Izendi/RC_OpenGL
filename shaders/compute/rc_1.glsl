@@ -6,7 +6,7 @@ layout(rgba32f, binding = 3) uniform image2D imgOutput;
 
 uniform float mouseX[20];
 uniform float mouseY[20];
-uniform vec4 u_circleColor[20];
+uniform vec3 u_circleColor[20];
 
 uniform int mouseIndex;
 
@@ -292,7 +292,7 @@ void main()
         if (distanceFromNearestSDF < 0.1)
         {
             //value = vec4(0.0, 0.0, 1.0, 1.0); //Make fragment blue if ray intersects with a sphere.
-            nearestIndex = nearestIndex - 1;
+            //nearestIndex = nearestIndex;
             value = vec4(u_circleColor[nearestIndex].x, u_circleColor[nearestIndex].y, u_circleColor[nearestIndex].z, 1.0);
             break;
         }

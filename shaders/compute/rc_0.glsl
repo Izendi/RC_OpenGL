@@ -260,7 +260,7 @@ void main()
 
         if (distanceFromNearestSDF < 0.1)
         {
-            nearestIndex = nearestIndex - 1;
+            //nearestIndex = nearestIndex - 1;
             value = vec4(u_circleColor[nearestIndex].x, u_circleColor[nearestIndex].y, u_circleColor[nearestIndex].z, 1.0);
             //value = vec4(0.6, 0.2, 0.6, 1.0); //Make fragment red if ray intersects with a sphere.
 

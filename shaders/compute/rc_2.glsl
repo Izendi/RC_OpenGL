@@ -7,7 +7,7 @@ layout(rgba32f, binding = 4) uniform image2D imgOutput;
 
 uniform float mouseX[20];
 uniform float mouseY[20];
-uniform vec4 u_circleColor[20];
+uniform vec3 u_circleColor[20];
 
 uniform int mouseIndex;
 

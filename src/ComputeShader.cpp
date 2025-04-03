@@ -114,6 +114,12 @@ void ComputeShader::setUniformInt(std::string name, int val) const
 
 }
 
+void ComputeShader::setUniformVec3Array(std::string name, uint32_t size, glm::vec3* array)
+{
+	const char* n = name.c_str();
+	GLCALL(glUniform3fv(glGetUniformLocation(m_program_ID, n), size, &array[0][0]));
+}
+
 void ComputeShader::setUniformFloatValue(std::string name, float val) const
 {
 	const char* n = name.c_str();

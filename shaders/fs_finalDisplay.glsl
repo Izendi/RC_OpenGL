@@ -10,6 +10,12 @@ uniform sampler2D u_tex_rc0;
 uniform float u_resolution_x;
 uniform float u_resolution_y;
 
+/*
+uniform vec4 u_circleColor[20];
+
+uniform int mouseIndex;
+*/
+
 //The below is a method of getting the texture from textue unit 0 without manually having to send it in yourself.
 //layout(binding = 0) uniform sampler2D colortexture;
 
@@ -87,6 +93,11 @@ void main()
     //FragColor = vec4(texColor.x, texColor.y, texColor.z, 1.0);
 
     //vec4 testFinalColor = vec4(1.0, 0.0, 1.0, 1.0);
+
+    /*
+    vec4 testColor = vec4(u_circleColor[mouseIndex].x, u_circleColor[mouseIndex].y, u_circleColor[mouseIndex].z, 1.0);
+    */
+    
 
     FragColor = finalColor;
     //FragColor = testFinalColor;

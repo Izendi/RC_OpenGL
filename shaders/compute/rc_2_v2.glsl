@@ -322,7 +322,7 @@ void main()
         {
             //value = vec4(1.0, 0.0, 0.0, 1.0); //Make fragment red if ray intersects with a sphere.
             //value = u_circleColor;
-            nearestIndex = nearestIndex - 1;
+            //nearestIndex = nearestIndex - 1;
             value = vec4(u_circleColor[nearestIndex].x, u_circleColor[nearestIndex].y, u_circleColor[nearestIndex].z, 1.0);
 
             value.a = 1.0;
