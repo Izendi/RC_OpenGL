@@ -250,7 +250,7 @@ void main()
 
     //ray equation = O + Pt
 
-    float radius = 20.0;
+    float radius = 6.0;
     float totalRayTravelDistance = 0.0;
 
     //int oldNearestIndex = 0;
