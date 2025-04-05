@@ -107,7 +107,7 @@ vec4 averageColorValuesAtNplus1_glInvocation(uvec3 g_TLP, uvec3 g_TRP, uvec3 g_B
     vec4 color_2 = texelFetch(u_tex_rc3, texelCoord_2, 0);
     vec4 color_3 = texelFetch(u_tex_rc3, texelCoord_3, 0);
 
-    vec4 avgColor = (color_0 + color_1 + color_2 + color_3) / 4.0;
+    vec4 avgColor = ((color_0 + color_1 + color_2 + color_3) / 4.0);// / 64.0;
     avgColor.a = 1.0;
 
     return avgColor;
@@ -302,7 +302,7 @@ void main()
 
     // ------
 
-    vec4 value = vec4(0.1, 0.1, 0.1, 1.0); //Default value if ray does not hit a sphere.
+    vec4 value = vec4(0.0, 0.0, 0.0, 1.0); //Default value if ray does not hit a sphere.
 
     float distanceFromNearestSDF = lvl_2_interval - 0.1;
     float oldDistanceFromNearestSDF = distanceFromNearestSDF;

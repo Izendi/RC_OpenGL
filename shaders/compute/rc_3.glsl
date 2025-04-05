@@ -47,7 +47,7 @@ void main()
 
     // ------
 
-    vec4 value = vec4(0.1, 0.1, 0.1, 1.0); //Default value if ray does not hit a sphere.
+    vec4 value = vec4(0.0, 0.0, 0.0, 1.0); //Default value if ray does not hit a sphere.
 
     float distanceFromNearestSDF = lvl_3_interval - 0.1;
     float oldDistanceFromNearestSDF = distanceFromNearestSDF;
@@ -77,7 +77,6 @@ void main()
 
         if (distance(ray, rayOrigin) > lvl_3_interval)
         {
-            value = vec4(u_circleColor[nearestIndex].x, u_circleColor[nearestIndex].y, u_circleColor[nearestIndex].z, 1.0);
             break;
         }
 

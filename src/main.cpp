@@ -31,10 +31,10 @@ float g_lvl_3_interval = 16.0f;
 float g_lvl_4_interval = 32.0f;
 */
 
-float g_lvl_0_interval = 15.0f;
-float g_lvl_1_interval = 30.0f;
-float g_lvl_2_interval = 60.0f;
-float g_lvl_3_interval = 120.0f;
+float g_lvl_0_interval = 2.0f;
+float g_lvl_1_interval = 4.0f;
+float g_lvl_2_interval = 8.0f;
+float g_lvl_3_interval = 16.0f;
 //float g_lvl_4_interval = 0.0f;
 
 int g_xResolution = SCR_WIDTH;
