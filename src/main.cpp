@@ -35,7 +35,7 @@ float g_lvl_0_interval = 4.0f;
 float g_lvl_1_interval = 8.0f;
 float g_lvl_2_interval = 16.0f;
 float g_lvl_3_interval = 32.0f;
-//float g_lvl_4_interval = 0.0f;
+float g_lvl_4_interval = 64.0f;
 
 int g_xResolution = SCR_WIDTH;
 int g_yResolution = SCR_HEIGHT;
@@ -46,9 +46,9 @@ struct compShaderTexSize
 	uint32_t y_size = 512;
 };
 
-float mouseXpos[20] = { 0 };
-float mouseYpos[20] = { 0 };
-glm::vec3 circleColor[20] = { glm::vec3(0.0f) };
+float mouseXpos[50] = { 0 };
+float mouseYpos[50] = { 0 };
+glm::vec3 circleColor[50] = { glm::vec3(0.0f) };
 
 int mouseIndex = 0;
 unsigned int frameCount = 0;
@@ -114,7 +114,8 @@ int main()
 		"../../shaders/compute/rc_1.glsl", 
 		"../../shaders/compute/rc_2.glsl",
 		"../../shaders/compute/rc_3.glsl",
-		"../../shaders/compute/rc_2_v2.glsl"
+		"../../shaders/compute/rc_2_v2.glsl",
+		"../../shaders/compute/rc_4.glsl"
 	);
 
 	//Image 1 to write onto in compute shader:
@@ -202,18 +203,17 @@ int main()
 	glBindImageTexture(6, rc_2_v2_tex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); //Uses image unit 6
 
 	// Img Cascade Level 4 real data texture:
-	/*
 	uint32_t rc_4_tex;
 	GLCALL(glGenTextures(1, &rc_4_tex));
-	GLCALL(glActiveTexture(GL_TEXTURE7)); //The next call to glBindTexture will determine the texture assigned to this texture unit.
+	GLCALL(glActiveTexture(GL_TEXTURE8)); //The next call to glBindTexture will determine the texture assigned to this texture unit.
 	GLCALL(glBindTexture(GL_TEXTURE_2D, rc_4_tex));
 	GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, cmpShTxSize.x_size, cmpShTxSize.y_size, 0, GL_RGBA, GL_FLOAT, NULL));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glBindImageTexture(6, rc_4_tex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); //Uses image unit 6
-	*/
+	glBindImageTexture(7, rc_4_tex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F); //Uses image unit 6
+	
 
 	//Compute Shader Setup: END   --------------------------------------------
 
@@ -435,26 +435,42 @@ int main()
 
 			// -----
 
+			glUseProgram(g_GuiData.csRC_4.m_program_ID);
+
+			g_GuiData.csRC_4.setUniformArray("mouseX", 50, mouseXpos);
+			g_GuiData.csRC_4.setUniformArray("mouseY", 50, mouseYpos);
+			g_GuiData.csRC_4.setUniformInt("mouseIndex", mouseIndex);
+			g_GuiData.csRC_4.setUniformVec3Array("u_circleColor", 50, circleColor);
+			g_GuiData.csRC_4.setUniformFloatValue("lvl_0_interval", g_lvl_0_interval);
+			g_GuiData.csRC_4.setUniformFloatValue("lvl_1_interval", g_lvl_1_interval);
+			g_GuiData.csRC_4.setUniformFloatValue("lvl_2_interval", g_lvl_2_interval);
+			g_GuiData.csRC_4.setUniformFloatValue("lvl_3_interval", g_lvl_3_interval);
+			g_GuiData.csRC_4.setUniformFloatValue("lvl_4_interval", g_lvl_4_interval);
+
+			glDispatchCompute(16, 16, 1);
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
 			glUseProgram(g_GuiData.csRC_3.m_program_ID);
 
-			g_GuiData.csRC_3.setUniformArray("mouseX", 20, mouseXpos);
-			g_GuiData.csRC_3.setUniformArray("mouseY", 20, mouseYpos);
+			g_GuiData.csRC_3.setUniformArray("mouseX", 50, mouseXpos);
+			g_GuiData.csRC_3.setUniformArray("mouseY", 50, mouseYpos);
 			g_GuiData.csRC_3.setUniformInt("mouseIndex", mouseIndex);
-			g_GuiData.csRC_3.setUniformVec3Array("u_circleColor", 20, circleColor);
+			g_GuiData.csRC_3.setUniformVec3Array("u_circleColor", 50, circleColor);
 			g_GuiData.csRC_3.setUniformFloatValue("lvl_0_interval", g_lvl_0_interval);
 			g_GuiData.csRC_3.setUniformFloatValue("lvl_1_interval", g_lvl_1_interval);
 			g_GuiData.csRC_3.setUniformFloatValue("lvl_2_interval", g_lvl_2_interval);
 			g_GuiData.csRC_3.setUniformFloatValue("lvl_3_interval", g_lvl_3_interval);
+			g_GuiData.csRC_3.setUniformTextureUnit("u_tex_rc4", 8);
 
 			glDispatchCompute(32, 32, 1);
 			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 			glUseProgram(g_GuiData.csRC_2.m_program_ID);
 
-			g_GuiData.csRC_2.setUniformArray("mouseX", 20, mouseXpos);
-			g_GuiData.csRC_2.setUniformArray("mouseY", 20, mouseYpos);
+			g_GuiData.csRC_2.setUniformArray("mouseX", 50, mouseXpos);
+			g_GuiData.csRC_2.setUniformArray("mouseY", 50, mouseYpos);
 			g_GuiData.csRC_2.setUniformInt("mouseIndex", mouseIndex);
-			g_GuiData.csRC_2.setUniformVec3Array("u_circleColor", 20, circleColor);
+			g_GuiData.csRC_2.setUniformVec3Array("u_circleColor", 50, circleColor);
 			g_GuiData.csRC_2.setUniformFloatValue("lvl_0_interval", g_lvl_0_interval);
 			g_GuiData.csRC_2.setUniformFloatValue("lvl_1_interval", g_lvl_1_interval);
 			g_GuiData.csRC_2.setUniformFloatValue("lvl_2_interval", g_lvl_2_interval);
@@ -466,10 +482,10 @@ int main()
 
 			glUseProgram(g_GuiData.csRC_2_v2.m_program_ID);
 
-			g_GuiData.csRC_2_v2.setUniformArray("mouseX", 20, mouseXpos);
-			g_GuiData.csRC_2_v2.setUniformArray("mouseY", 20, mouseYpos);
+			g_GuiData.csRC_2_v2.setUniformArray("mouseX", 50, mouseXpos);
+			g_GuiData.csRC_2_v2.setUniformArray("mouseY", 50, mouseYpos);
 			g_GuiData.csRC_2_v2.setUniformInt("mouseIndex", mouseIndex);
-			g_GuiData.csRC_2_v2.setUniformVec3Array("u_circleColor", 20, circleColor);
+			g_GuiData.csRC_2_v2.setUniformVec3Array("u_circleColor", 50, circleColor);
 			g_GuiData.csRC_2_v2.setUniformFloatValue("lvl_0_interval", g_lvl_0_interval);
 			g_GuiData.csRC_2_v2.setUniformFloatValue("lvl_1_interval", g_lvl_1_interval);
 			g_GuiData.csRC_2_v2.setUniformFloatValue("lvl_2_interval", g_lvl_2_interval);
@@ -482,10 +498,10 @@ int main()
 
 			glUseProgram(g_GuiData.csRC_1.m_program_ID);
 
-			g_GuiData.csRC_1.setUniformArray("mouseX", 20, mouseXpos);
-			g_GuiData.csRC_1.setUniformArray("mouseY", 20, mouseYpos);
+			g_GuiData.csRC_1.setUniformArray("mouseX", 50, mouseXpos);
+			g_GuiData.csRC_1.setUniformArray("mouseY", 50, mouseYpos);
 			g_GuiData.csRC_1.setUniformInt("mouseIndex", mouseIndex);
-			g_GuiData.csRC_1.setUniformVec3Array("u_circleColor", 20, circleColor);
+			g_GuiData.csRC_1.setUniformVec3Array("u_circleColor", 50, circleColor);
 			g_GuiData.csRC_1.setUniformFloatValue("lvl_0_interval", g_lvl_0_interval);
 			g_GuiData.csRC_1.setUniformFloatValue("lvl_1_interval", g_lvl_1_interval);
 			g_GuiData.csRC_1.setUniformTextureUnit("u_tex_rc2_v2", 7);
@@ -496,10 +512,10 @@ int main()
 
 			glUseProgram(g_GuiData.csRC_0.m_program_ID);
 
-			g_GuiData.csRC_0.setUniformArray("mouseX", 20, mouseXpos);
-			g_GuiData.csRC_0.setUniformArray("mouseY", 20, mouseYpos);
+			g_GuiData.csRC_0.setUniformArray("mouseX", 50, mouseXpos);
+			g_GuiData.csRC_0.setUniformArray("mouseY", 50, mouseYpos);
 			g_GuiData.csRC_0.setUniformInt("mouseIndex", mouseIndex);
-			g_GuiData.csRC_0.setUniformVec3Array("u_circleColor", 20, circleColor);
+			g_GuiData.csRC_0.setUniformVec3Array("u_circleColor", 50, circleColor);
 			g_GuiData.csRC_0.setUniformFloatValue("lvl_0_interval", g_lvl_0_interval);
 			g_GuiData.csRC_0.setUniformTextureUnit("u_tex_rc1", 4);
 
@@ -530,7 +546,7 @@ int main()
 
 		//This is for mouse input stuff: (A bit hacky, but it works):
 
-		if (mouseIndex < 20 && g_mouseClicked == 0.0f && mouseClicked == true)
+		if (mouseIndex < 50 && g_mouseClicked == 0.0f && mouseClicked == true)
 		{
 			if (!isGuiHovered)
 			{
@@ -577,6 +593,7 @@ int main()
 		activeShader.setUniformTextureUnit("u_tex_rc2", 5);
 		activeShader.setUniformTextureUnit("u_tex_rc3", 6);
 		activeShader.setUniformTextureUnit("u_tex_rc2_v2", 7);
+		activeShader.setUniformTextureUnit("u_tex_rc4", 8);
 
 		activeShader.setUniformFloat("u_resolution_x", (float)g_xResolution);
 		activeShader.setUniformFloat("u_resolution_y", (float)g_yResolution);

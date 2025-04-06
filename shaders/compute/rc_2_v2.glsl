@@ -5,9 +5,9 @@ layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 layout(rgba32f, binding = 6) uniform image2D imgOutput;
 
-uniform float mouseX[20];
-uniform float mouseY[20];
-uniform vec3 u_circleColor[20];
+uniform float mouseX[50];
+uniform float mouseY[50];
+uniform vec3 u_circleColor[50];
 
 uniform int mouseIndex;
 
@@ -302,7 +302,7 @@ void main()
 
     // ------
 
-    vec4 value = vec4(0.0, 0.0, 0.0, 1.0); //Default value if ray does not hit a sphere.
+    vec4 value = vec4(0.02, 0.02, 0.02, 1.0); //Default value if ray does not hit a sphere.
 
     float distanceFromNearestSDF = lvl_2_interval - 0.1;
     float oldDistanceFromNearestSDF = distanceFromNearestSDF;
@@ -312,7 +312,7 @@ void main()
 
     //ray equation = O + Pt
 
-    float radius = 6.0;
+    float radius = 10.0;
     float totalRayTravelDistance = 0.0;
 
     for (int i = 0; i < 10; i++)

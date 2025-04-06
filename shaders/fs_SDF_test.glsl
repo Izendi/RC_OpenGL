@@ -63,7 +63,7 @@ float sdfCircle(vec2 fragPos, float r, float offset_y, float offset_x)
 void main()
 {
 
-    vec2 pixelCoords = (texCoord) * vec2(800, 600);
+    vec2 pixelCoords = (texCoord) * vec2(512, 512);
 
     float x = step((abs(mod(texCoord.x, 0.025))), 0.004); // if value is less than 0.004 return 1
     float y = step((abs(mod(texCoord.y, 0.025))), 0.004);
@@ -81,7 +81,7 @@ void main()
 
     for (int i = 0; i < mouseIndex; i++)
     {
-        d = sdfCircle(pixelCoords, 20.0, -mouseY[i] * 600.0, -mouseX[i] * 800.0);
+        d = sdfCircle(pixelCoords, 20.0, -mouseY[i] * 512.0, -mouseX[i] * 512.0);
         finalColor = mix(RED, finalColor, step(0.0, d));
     }
 

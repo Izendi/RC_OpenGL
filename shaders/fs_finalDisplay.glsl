@@ -10,6 +10,12 @@ uniform sampler2D u_tex_rc0;
 uniform float u_resolution_x;
 uniform float u_resolution_y;
 
+uniform vec3 u_circleColor[50];
+uniform int mouseIndex;
+
+uniform float mouseX[500];
+uniform float mouseY[500];
+
 /*
 uniform vec4 u_circleColor[20];
 
@@ -18,6 +24,14 @@ uniform int mouseIndex;
 
 //The below is a method of getting the texture from textue unit 0 without manually having to send it in yourself.
 //layout(binding = 0) uniform sampler2D colortexture;
+
+float sdfCircle(vec2 fragPos, float r, float offset_y, float offset_x)
+{
+    fragPos.x = fragPos.x + offset_x;
+    fragPos.y = fragPos.y + offset_y;
+    return length(fragPos) - r;
+}
+
 
 vec4 bilinearInterpolation(vec4 tl, vec4 tr, vec4 bl, vec4 br, float fx, float fy)
 {
@@ -97,7 +111,19 @@ void main()
     /*
     vec4 testColor = vec4(u_circleColor[mouseIndex].x, u_circleColor[mouseIndex].y, u_circleColor[mouseIndex].z, 1.0);
     */
-    
+
+    vec2 pixelCoords = (texCoord)*vec2(512, 512);
+    float d;
+
+
+
+    for (int i = 0; i < mouseIndex; i++)
+    {
+        vec4 circColor = vec4(u_circleColor[i].x, u_circleColor[i].y, u_circleColor[i].z, 1.0);
+
+        d = sdfCircle(pixelCoords, 10.0, -mouseY[i] * 512.0, -mouseX[i] * 512.0);
+        finalColor = mix(circColor, finalColor, step(0.0, d));
+    }
 
     FragColor = finalColor;
     //FragColor = testFinalColor;
