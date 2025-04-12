@@ -6,8 +6,8 @@ out vec4 FragColor;
 
 uniform vec4 ourColor;
 
-uniform float mouseX[500];
-uniform float mouseY[500];
+uniform float mouseX[20];
+uniform float mouseY[20];
 
 uniform int mouseIndex;
 

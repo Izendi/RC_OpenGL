@@ -10,11 +10,11 @@ uniform sampler2D u_tex_rc0;
 uniform float u_resolution_x;
 uniform float u_resolution_y;
 
-uniform vec3 u_circleColor[50];
+uniform vec3 u_circleColor[20];
 uniform int mouseIndex;
 
-uniform float mouseX[500];
-uniform float mouseY[500];
+uniform float mouseX[20];
+uniform float mouseY[20];
 
 /*
 uniform vec4 u_circleColor[20];

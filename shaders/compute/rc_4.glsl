@@ -5,9 +5,9 @@ layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
 layout(rgba32f, binding = 7) uniform image2D imgOutput;
 
-uniform float mouseX[50];
-uniform float mouseY[50];
-uniform vec3 u_circleColor[50];
+uniform float mouseX[20];
+uniform float mouseY[20];
+uniform vec3 u_circleColor[20];
 
 uniform int mouseIndex;
 

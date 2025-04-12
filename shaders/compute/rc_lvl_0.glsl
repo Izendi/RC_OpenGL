@@ -4,8 +4,8 @@ layout(local_size_x = 2, local_size_y = 2, local_size_z = 1) in;
 
 layout(rgba32f, binding = 1) uniform image2D imgOutput;
 
-uniform float mouseX[100];
-uniform float mouseY[100];
+uniform float mouseX[20];
+uniform float mouseY[20];
 
 uniform int mouseIndex;
 
